@@ -13,57 +13,54 @@ import InputResult from '../../model/InputResult';
 import { useDispatchCode, useSelectorMessages } from '../../hooks/hooks';
 const columnsCommon: GridColDef[] = [
     {
-        field: 'id',
-        headerName: 'ID',
+        field: '_id',
+        headerName: 'Id',
         flex: 0.5,
         headerClassName: 'data-grid-header',
         align: 'center',
         headerAlign: 'center',
     },
     {
-        field: 'name',
-        headerName: 'Name',
+        field: 'from',
+        headerName: 'From',
         flex: 0.7,
         headerClassName: 'data-grid-header',
         align: 'center',
         headerAlign: 'center',
+    },    
+    {
+        field: 'to',
+        headerName: 'To',
+        flex: 0.8,        
+        headerClassName: 'data-grid-header',
+        align: 'center',
+        headerAlign: 'center',
     },
     {
-        field: 'birthDate',
-        headerName: 'Date',
+        field: 'text',
+        headerName: 'Text',
         flex: 0.8,
+        headerClassName: 'data-grid-header',
+        align: 'center',
+        headerAlign: 'center',
+    },
+    {
+        field: 'timestamp',
+        headerName: 'Timestamp',
         type: 'date',
-        headerClassName: 'data-grid-header',
-        align: 'center',
-        headerAlign: 'center',
-    },
-    {
-        field: 'department',
-        headerName: 'Department',
-        flex: 0.8,
-        headerClassName: 'data-grid-header',
-        align: 'center',
-        headerAlign: 'center',
-    },
-    {
-        field: 'salary',
-        headerName: 'Salary',
-        type: 'number',
         flex: 0.6,
         headerClassName: 'data-grid-header',
         align: 'center',
         headerAlign: 'center',
     },
     {
-        field: 'gender',
-        headerName: 'Gender',
+        field: 'read',
+        headerName: 'Read',
         flex: 0.6,
         headerClassName: 'data-grid-header',
         align: 'center',
-        headerAlign: 'center',
-        renderCell: (params) => {
-            return params.value == 'male' ? <Man /> : <Woman />;
-        },
+        headerAlign: 'center'
+        
     },
 ];
 
@@ -128,8 +125,8 @@ const Messages: React.FC = () => {
     }
     function removeMessage(id: any) {
         title.current = 'Remove Message object?';
-        const message = messages.find((mes) => mes.id == id);
-        content.current = `You are going remove message with id ${message?.id}`;
+        const message = messages.find((mes) => mes._id == id);
+        content.current = `You are going remove message with id ${message?._id}`;
         messageId.current = id;
         confirmFn.current = actualRemove;
         setOpenConfirm(true);
@@ -152,7 +149,7 @@ const Messages: React.FC = () => {
         if (JSON.stringify(message.current) != JSON.stringify(mes)) {
             title.current = 'Update Message object?';
             message.current = mes;
-            content.current = `You are going update message with id ${mes.id}`;
+            content.current = `You are going update message with id ${mes._id}`;
             confirmFn.current = actualUpdate;
             setOpenConfirm(true);
         }
@@ -181,7 +178,7 @@ const Messages: React.FC = () => {
             }}
         >
             <Box sx={{ height: '80vh', width: '95vw' }}>
-                <DataGrid columns={columns} rows={messages} />
+            <DataGrid columns={columns} rows={messages} getRowId={(row) => row._id} />
             </Box>
             <Confirmation
                 confirmFn={confirmFn.current}

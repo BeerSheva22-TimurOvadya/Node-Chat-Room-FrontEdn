@@ -33,7 +33,7 @@ export function useSelectorMessages() {
                 if (typeof emplArray === 'string') {
                     errorMessage = emplArray;
                 } else {
-                    setMessages(emplArray.map((e) => ({ ...e, birthDate: new Date(e.birthDate) })));
+                    setMessages(emplArray.map((e) => ({ ...e, timestamp: new Date(e.timestamp) })));
                 }
                 dispatch(errorMessage, '');
             },

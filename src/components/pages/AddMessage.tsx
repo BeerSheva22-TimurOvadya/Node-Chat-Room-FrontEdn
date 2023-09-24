@@ -14,7 +14,7 @@ const AddMessage: React.FC = () => {
         const res: InputResult = {status: 'success', message: ''};
         try {
             const message: Message = await messagesService.addMessage(empl);
-            successMessage = `message with id: ${message.id} has been added`
+            successMessage = `message with id: ${message._id} has been added`
         } catch (error: any) {
            errorMessage = error;
         }

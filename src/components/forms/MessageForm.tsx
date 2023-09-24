@@ -27,12 +27,12 @@ type Props = {
 const initialDate: any = 0;
 const initialGender: any = '';
 const initialMessage: Message = {
-    id: 0,
-    birthDate: initialDate,
-    name: '',
-    department: '',
-    salary: 0,
-    gender: initialGender,
+    _id: 0,
+    from: '',
+    to: '',
+    text: '',
+    timestamp: initialDate,
+    read: initialGender,
 };
 export const MessageForm: React.FC<Props> = ({ submitFn, messageUpdated }) => {
     const { minYear, minSalary, maxYear, maxSalary, departments } = messageConfig;
@@ -41,37 +41,37 @@ export const MessageForm: React.FC<Props> = ({ submitFn, messageUpdated }) => {
     function handlerName(event: any) {
         const name = event.target.value;
         const emplCopy = { ...message };
-        emplCopy.name = name;
+        emplCopy.from = name;
         setMessage(emplCopy);
     }
     function handlerBirthdate(event: any) {
         const birthDate = event.target.value;
         const emplCopy = { ...message };
-        emplCopy.birthDate = new Date(birthDate);
+        emplCopy.timestamp = new Date(birthDate);
         setMessage(emplCopy);
     }
     function handlerSalary(event: any) {
-        const salary: number = +event.target.value;
+        const salary = event.target.value;
         const emplCopy = { ...message };
-        emplCopy.salary = salary;
+        emplCopy.to = salary;
         setMessage(emplCopy);
     }
     function handlerDepartment(event: any) {
         const department = event.target.value;
         const emplCopy = { ...message };
-        emplCopy.department = department;
+        emplCopy.text = department;
         setMessage(emplCopy);
     }
     function genderHandler(event: any) {
         setErrorMessage('');
-        const gender: 'male' | 'female' = event.target.value;
+        const gender = event.target.value;
         const emplCopy = { ...message };
-        emplCopy.gender = gender;
+        emplCopy.read = gender;
         setMessage(emplCopy);
     }
     async function onSubmitFn(event: any) {
         event.preventDefault();
-        if (!message.gender) {
+        if (!message.read) {
             setErrorMessage('Please select gender');
         } else {
             const res = await submitFn(message);
@@ -93,7 +93,7 @@ export const MessageForm: React.FC<Props> = ({ submitFn, messageUpdated }) => {
                             <Select
                                 labelId="select-department-id"
                                 label="Department"
-                                value={message.department}
+                                value={message.text}
                                 onChange={handlerDepartment}
                             >
                                 <MenuItem value="">None</MenuItem>
@@ -113,7 +113,7 @@ export const MessageForm: React.FC<Props> = ({ submitFn, messageUpdated }) => {
                             label="Message name"
                             helperText="enter Message name"
                             onChange={handlerName}
-                            value={message.name}
+                            value={message.from}
                         />
                     </Grid>
                     <Grid item xs={8} sm={4} md={5}>
@@ -123,8 +123,8 @@ export const MessageForm: React.FC<Props> = ({ submitFn, messageUpdated }) => {
                             fullWidth
                             label="birthDate"
                             value={
-                                message.birthDate
-                                    ? message.birthDate.toISOString().substring(0, 10)
+                                message.timestamp
+                                    ? message.timestamp.toISOString().substring(0, 10)
                                     : ''
                             }
                             inputProps={{
@@ -145,7 +145,7 @@ export const MessageForm: React.FC<Props> = ({ submitFn, messageUpdated }) => {
                             required
                             type="number"
                             onChange={handlerSalary}
-                            value={message.salary || ''}
+                            value={message.to || ''}
                             helperText={`enter salary in range [${minSalary}-${maxSalary}]`}
                             inputProps={{
                                 min: `${minSalary}`,
@@ -159,7 +159,7 @@ export const MessageForm: React.FC<Props> = ({ submitFn, messageUpdated }) => {
                             <RadioGroup
                                 aria-labelledby="gender-group-label"
                                 defaultValue=""
-                                value={message.gender || ''}
+                                value={message.read || ''}
                                 name="radio-buttons-group"
                                 row
                                 onChange={genderHandler}

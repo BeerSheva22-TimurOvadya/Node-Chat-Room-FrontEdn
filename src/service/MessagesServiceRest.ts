@@ -61,7 +61,7 @@ export default class MessagesServiceRest implements MessagesService {
         this.urlWebsocket = `ws://${baseUrl}/websocket`;
     }
     async updateMessage(empl: Message): Promise<Message> {
-        const response = await fetchRequest(this.getUrlWithId(empl.id!), { method: 'PUT' }, empl);
+        const response = await fetchRequest(this.getUrlWithId(empl._id!), { method: 'PUT' }, empl);
         return await response.json();
     }
     private getUrlWithId(id: any): string {
@@ -103,8 +103,8 @@ export default class MessagesServiceRest implements MessagesService {
     }
 
     async addMessage(empl: Message): Promise<Message> {
-        if (empl.id == 0) {
-            delete empl.id;
+        if (empl._id == 0) {
+            delete empl._id;
         }
         const response = await fetchRequest(
             this.urlService,

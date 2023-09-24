@@ -29,9 +29,9 @@ const Generation: React.FC = () => {
         let count: number = 0;
         for (let i = 0; i < amount; i++) {
             try {
-                await messagesService.addMessage(
-                    getRandomMessage(minSalary, maxSalary, minYear, maxYear, departments),
-                );
+                // await messagesService.addMessage(
+                //     getRandomMessage(minSalary, maxSalary, minYear, maxYear, departments),
+                // );
                 count++;
             } catch (error: any) {
                 if (error.includes('Authentication')) {

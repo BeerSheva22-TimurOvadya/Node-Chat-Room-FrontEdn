@@ -1,9 +1,9 @@
 type Message = {
-    id?: any,
-    birthDate: Date,
-    name: string,
-    department: string,
-    salary: number,
-    gender: 'male'|'female'
+    _id?: any,
+    from: string,
+    to: string,
+    text: string,
+    timestamp: Date,
+    read: boolean
 }
 export default Message;
