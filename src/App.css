@@ -1,0 +1,25 @@
+.component-logo {
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+}
+.active {
+    background-color: blue;
+    color: white;
+}
+.navigator-list {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.navigator-item {
+    margin-left: 0;
+}
+.navigator-item+.navigator-item {
+    margin-left: 3vw;
+}
+.data-grid-header {
+    font-style: italic;
+    font-size: 1.1em;
+}

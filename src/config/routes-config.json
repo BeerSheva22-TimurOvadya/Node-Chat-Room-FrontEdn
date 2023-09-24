@@ -1,0 +1,11 @@
+{
+    "always": [],
+    "authenticated": [{"to": "/", "label": "Employees Table", "order":1},
+    {"to": "/signout", "label": "Sign Out","order":1000},{"to": "/statistics/age", "label": "Age Statistics","order":100},
+    {"to": "/statistics/salary", "label": "Salary Statistics","order":100}
+     ],
+     "admin": [{"to": "/employees/add", "label": "Add Employee", "order":2},
+    {"to": "/generation", "label": "Generate Employees", "order":20}],
+     "noadmin": [],
+     "noauthenticated": [{"to": "/signin", "label": "Sign In", "order": 2}]
+}
