@@ -15,7 +15,7 @@ export function getRandomInt(min, max) {
 export function getRandomElement(array) {
     return array[getRandomInt(0, array.length)]
 }
-export function getRandomEmployee(minSalary, maxSalary, minYear, maxYear, departments) {
+export function getRandomMessage(minSalary, maxSalary, minYear, maxYear, departments) {
    const gender = getRandomElement(['male', 'female']);
    const name = getRandomElement(gender == 'female' ? names.femaleNames :
     names.maleNames);
