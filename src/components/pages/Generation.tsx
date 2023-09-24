@@ -1,14 +1,12 @@
 import { useDispatch } from 'react-redux';
 import InputResult from '../../model/InputResult';
 import Input from '../common/Input';
-import { messagesService } from '../../config/service-config';
-import Message from '../../model/Message';
-import CodePayload from '../../model/CodePayload';
+
 import CodeType from '../../model/CodeType';
-import { getRandomMessage } from '../../util/random';
-import messageConfig from '../../config/messages-config.json';
+
+
 import { codeActions } from '../../redux/slices/codeSlice';
-const { minSalary, maxSalary, departments, minYear, maxYear } = messageConfig;
+
 const MAX_AMOUNT = 20;
 const Generation: React.FC = () => {
     const dispatch = useDispatch();

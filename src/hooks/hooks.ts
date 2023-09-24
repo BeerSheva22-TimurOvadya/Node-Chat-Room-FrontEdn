@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import Message from '../model/Message';
 import { Subscription } from 'rxjs';
 import { messagesService } from '../config/service-config';
+import { usersService} from '../config/service-config';
+import User from '../model/User';
 
 export function useDispatchCode() {
     const dispatch = useDispatch();
@@ -41,4 +43,25 @@ export function useSelectorMessages() {
         return () => subscription.unsubscribe();
     }, []);
     return messages;
+}
+
+export function useSelectorUsers() {
+    const dispatch = useDispatchCode();
+    const [users, setUsers] = useState<User[]>([]);
+    useEffect(() => {
+        const subscription: Subscription = usersService.getAllAccounts().subscribe({
+            next(emplArray: User[] | string) {
+                let errorMessage: string = '';
+                if (typeof emplArray === 'string') {
+                    errorMessage = emplArray;
+                } 
+                else {
+                    setUsers(emplArray.map((e) => ({ ...e })));
+                }
+                dispatch(errorMessage, '');
+            },
+        });
+        return () => subscription.unsubscribe();
+    }, []);
+    return users;
 }

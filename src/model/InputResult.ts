@@ -2,6 +2,7 @@ import { StatusType } from "./StatusType";
 
 type InputResult = {
     status: StatusType;
-    message?: string
+    message?: string;
+    user?: string;
 }
 export default InputResult;

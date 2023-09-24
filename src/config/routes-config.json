@@ -1,7 +1,8 @@
 {
     "always": [],
     "authenticated": [
-        { "to": "/", "label": "Messages Table", "order": 1 },
+        { "to": "/messages", "label": "Messages Table", "order": 1 },
+        { "to": "/users", "label": "Users", "order": 3 },
         { "to": "/signout", "label": "Sign Out", "order": 1000 }
     ],
     "admin": [

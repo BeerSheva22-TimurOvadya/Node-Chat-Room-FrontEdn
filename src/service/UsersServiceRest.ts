@@ -1,13 +1,15 @@
 import { Observable, Subscriber } from 'rxjs';
-import Message from '../model/Message';
+import User from '../model/User';
 import { AUTH_DATA_JWT } from './AuthServiceJwt';
-import MessagesService from './MessagesService';
+import UsersService from './UsersService';
+
+
 
 async function getResponseText(response: Response): Promise<string> {
     let res = '';
     if (!response.ok) {
         const { status } = response;
-        res = status === 401 || status === 403 ? 'Authentication' : await response.text();
+        res = status == 401 || status == 403 ? 'Authentication' : await response.text();
     }
     return res;
 }
@@ -18,7 +20,7 @@ function getHeaders(): HeadersInit {
     };
     return res;
 }
-async function fetchRequest(url: string, options: RequestInit, empl?: Message): Promise<Response> {
+async function fetchRequest(url: string, options: RequestInit, empl?: User): Promise<Response> {
     options.headers = getHeaders();
     if (empl) {
         options.body = JSON.stringify(empl);
@@ -46,43 +48,35 @@ async function fetchRequest(url: string, options: RequestInit, empl?: Message): 
         throw responseText ? responseText : 'Server is unavailable. Repeat later on';
     }
 }
-async function fetchAllMessages(url: string): Promise<Message[] | string> {
-    const response = await fetchRequest(url, {});
+async function fetchAllUsers(url: string): Promise<User[] | string> {
+    const response = await fetchRequest(url, {});    
     return await response.json();
 }
 
-export default class MessagesServiceRest implements MessagesService {
-    private observable: Observable<Message[] | string> | null = null;
-    private subscriber: Subscriber<string | Message[]> | undefined;
+export default class UsersServiceRest implements UsersService {
+    private observable: Observable<User[] | string> | null = null;
+    private subscriber: Subscriber<string | User[]> | undefined;
     private urlService: string;
     private urlWebsocket: string;
     private webSocket: WebSocket | undefined;
+
     constructor(baseUrl: string) {
         this.urlService = `http://${baseUrl}`;
         this.urlWebsocket = `ws://${baseUrl}/websocket`;
     }
-    async updateMessage(empl: Message): Promise<Message> {
-        const response = await fetchRequest(this.getUrlWithId(empl._id!), { method: 'PUT' }, empl);
-        return await response.json();
-    }
-    private getUrlWithId(id: any): string {
-        return `${this.urlService}/${id}`;
-    }
+    
+    
     private sibscriberNext(): void {
-        fetchAllMessages(this.urlService)
-            .then((messages) => {
-                this.subscriber?.next(messages);
+        fetchAllUsers(this.urlService)
+            .then((users) => {
+                this.subscriber?.next(users);
             })
             .catch((error) => this.subscriber?.next(error));
     }
-    async deleteMessage(id: any): Promise<void> {
-        await fetchRequest(this.getUrlWithId(id), {
-            method: 'DELETE',
-        });
-    }
-    getMessages(): Observable<Message[] | string> {
+    
+    getAllAccounts(): Observable<User[] | string> {
         if (!this.observable) {
-            this.observable = new Observable<Message[] | string>((subscriber) => {
+            this.observable = new Observable<User[] | string>((subscriber) => {
                 this.subscriber = subscriber;
                 this.sibscriberNext();
                 this.connectWS();
@@ -102,18 +96,36 @@ export default class MessagesServiceRest implements MessagesService {
             this.sibscriberNext();
         };
     }
-
-    async addMessage(empl: Message): Promise<Message> {
-        if (empl._id == 0) {
-            delete empl._id;
-        }
-        const response = await fetchRequest(
-            this.urlService,
-            {
-                method: 'POST',
-            },
-            empl,
-        );
-        return response.json();
+    addAccount(user: User): Promise<User | string> {
+        return fetchRequest(`${this.urlService}/users`, {
+            method: 'POST',
+            body: JSON.stringify(user),
+        }).then(response => response.json());
     }
+
+    getAccount(username: string): Promise<User | string> {
+        return fetchRequest(`${this.urlService}/users/${username}`, { method: 'GET' })
+            .then(response => response.json());
+    }
+
+    login(user: User): Promise<string | null> {
+        return fetchRequest(`${this.urlService}/users/login`, {
+            method: 'POST',
+            body: JSON.stringify(user),
+        }).then(response => response.json().then(data => data.accessToken));
+    }
+
+    deleteUser(username: string): Promise<string> {
+        return fetchRequest(`${this.urlService}/users/${username}`, { method: 'DELETE' })
+            .then(response => `User ${username} has been deleted`);
+    }
+
+    updateUserStatus(username: string, status: string): Promise<string> {
+        return fetchRequest(`${this.urlService}/users/${username}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ status }),
+        }).then(response => `User ${username} status was changed to ${status}`);
+    }
+
+   
 }

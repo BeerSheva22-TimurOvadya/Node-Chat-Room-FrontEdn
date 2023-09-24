@@ -4,6 +4,6 @@ type Message = {
     to: string,
     text: string,
     timestamp: Date,
-    read: boolean
+    read?: boolean
 }
 export default Message;

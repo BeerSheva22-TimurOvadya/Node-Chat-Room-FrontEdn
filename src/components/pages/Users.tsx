@@ -1,51 +1,41 @@
 import { Box } from '@mui/material';
 import { useState, useRef, useMemo } from 'react';
-import { messagesService } from '../../config/service-config';
-
+import { usersService } from '../../config/service-config';
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-
 import { Delete } from '@mui/icons-material';
 import { useSelectorAuth } from '../../redux/store';
 import { Confirmation } from '../common/Confirmation';
+import { useDispatchCode, useSelectorUsers } from '../../hooks/hooks';
 
-import { useDispatchCode, useSelectorMessages } from '../../hooks/hooks';
 const columnsCommon: GridColDef[] = [
     {
-        field: 'from',
-        headerName: 'From',
+        field: 'username',
+        headerName: 'Email',
         flex: 0.7,
         headerClassName: 'data-grid-header',
         align: 'center',
         headerAlign: 'center',
     },
     {
-        field: 'to',
-        headerName: 'To',
-        flex: 0.8,
+        field: 'roles',
+        headerName: 'Roles',
+        flex: 0.7,
         headerClassName: 'data-grid-header',
         align: 'center',
         headerAlign: 'center',
     },
+
     {
-        field: 'text',
-        headerName: 'Text',
+        field: 'status',
+        headerName: 'Status',
         flex: 0.8,
-        headerClassName: 'data-grid-header',
-        align: 'center',
-        headerAlign: 'center',
-    },
-    {
-        field: 'timestamp',
-        headerName: 'Timestamp',
-        type: 'date',
-        flex: 0.6,
         headerClassName: 'data-grid-header',
         align: 'center',
         headerAlign: 'center',
     },
 ];
 
-const Messages: React.FC = () => {
+const Users: React.FC = () => {
     const columnsAdmin: GridColDef[] = [
         {
             field: 'actions',
@@ -55,7 +45,7 @@ const Messages: React.FC = () => {
                     <GridActionsCellItem
                         label="remove"
                         icon={<Delete />}
-                        onClick={() => removeMessage(params.id)}
+                        onClick={() => removeUser(params.id)}
                     />,
                 ];
             },
@@ -63,14 +53,16 @@ const Messages: React.FC = () => {
     ];
     const dispatch = useDispatchCode();
     const userData = useSelectorAuth();
-    const messages = useSelectorMessages();
-    const columns = useMemo(() => getColumns(), [userData, messages]);
+    const users = useSelectorUsers();
+    const columns = useMemo(() => getColumns(), [userData, users]);
 
     const [openConfirm, setOpenConfirm] = useState(false);
+
     const title = useRef('');
     const content = useRef('');
-    const messageId = useRef('');
+    const userId = useRef('');
     const confirmFn = useRef<any>(null);
+
     function getColumns(): GridColDef[] {
         let res: GridColDef[] = columnsCommon;
         if (userData && userData.role === 'admin') {
@@ -78,24 +70,24 @@ const Messages: React.FC = () => {
         }
         return res;
     }
-    function removeMessage(id: any) {
-        title.current = 'Remove Message object?';
-        const message = messages.find((mes) => mes._id === id);
-        content.current = `You are going remove message with id ${message?._id}`;
-        messageId.current = id;
+    function removeUser(id: any) {
+        title.current = 'Remove User object?';
+        const user = users.find((mes) => mes.username === id);
+        content.current = `You are going remove user with id ${user?.username}`;
+        userId.current = id;
         confirmFn.current = actualRemove;
         setOpenConfirm(true);
     }
     async function actualRemove(isOk: boolean) {
-        let errorMessage: string = '';
+        let errorUser: string = '';
         if (isOk) {
             try {
-                await messagesService.deleteMessage(messageId.current);
+                await usersService.deleteUser(userId.current);
             } catch (error: any) {
-                errorMessage = error;
+                errorUser = error;
             }
         }
-        dispatch(errorMessage, '');
+        dispatch(errorUser, '');
         setOpenConfirm(false);
     }
 
@@ -108,7 +100,7 @@ const Messages: React.FC = () => {
             }}
         >
             <Box sx={{ height: '80vh', width: '95vw' }}>
-                <DataGrid columns={columns} rows={messages} getRowId={(row) => row._id} />
+                <DataGrid columns={columns} rows={users} getRowId={(row) => row.username} />
             </Box>
             <Confirmation
                 confirmFn={confirmFn.current}
@@ -119,4 +111,4 @@ const Messages: React.FC = () => {
         </Box>
     );
 };
-export default Messages;
+export default Users;
