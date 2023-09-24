@@ -33,6 +33,14 @@ const columnsCommon: GridColDef[] = [
         align: 'center',
         headerAlign: 'center',
     },
+    {
+        field: 'online',
+        headerName: 'Status',
+        flex: 0.8,
+        headerClassName: 'data-grid-header',
+        align: 'center',
+        headerAlign: 'center',
+    },
 ];
 
 const Users: React.FC = () => {

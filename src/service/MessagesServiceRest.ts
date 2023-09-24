@@ -61,10 +61,7 @@ export default class MessagesServiceRest implements MessagesService {
         this.urlService = `http://${baseUrl}`;
         this.urlWebsocket = `ws://${baseUrl}/websocket`;
     }
-    async updateMessage(empl: Message): Promise<Message> {
-        const response = await fetchRequest(this.getUrlWithId(empl._id!), { method: 'PUT' }, empl);
-        return await response.json();
-    }
+    
     private getUrlWithId(id: any): string {
         return `${this.urlService}/${id}`;
     }
@@ -94,9 +91,9 @@ export default class MessagesServiceRest implements MessagesService {
     private disconnectWS(): void {
         this.webSocket?.close();
     }
+
     private connectWS() {
         this.webSocket = new WebSocket(this.urlWebsocket, localStorage.getItem(AUTH_DATA_JWT) || '');
-
         this.webSocket.onmessage = (message) => {
             console.log(message.data);
             this.sibscriberNext();
@@ -104,7 +101,7 @@ export default class MessagesServiceRest implements MessagesService {
     }
 
     async addMessage(empl: Message): Promise<Message> {
-        if (empl._id == 0) {
+        if (empl._id === 0) {
             delete empl._id;
         }
         const response = await fetchRequest(

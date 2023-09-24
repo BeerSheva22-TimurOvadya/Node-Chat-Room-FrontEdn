@@ -80,7 +80,7 @@ const Messages: React.FC = () => {
     }
     function removeMessage(id: any) {
         title.current = 'Remove Message object?';
-        const message = messages.find((mes) => mes._id === id);
+        const message = messages.find((mess) => mess._id === id);
         content.current = `You are going remove message with id ${message?._id}`;
         messageId.current = id;
         confirmFn.current = actualRemove;
