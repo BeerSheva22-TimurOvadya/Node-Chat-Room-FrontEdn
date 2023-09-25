@@ -2,6 +2,6 @@ type User = {
     username: string,
     roles: string[],    
     status: string,
-    online: Boolean
+    onlineStatus: string
 }
 export default User;

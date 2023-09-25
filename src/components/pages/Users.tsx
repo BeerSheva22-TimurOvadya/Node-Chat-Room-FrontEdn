@@ -34,8 +34,8 @@ const columnsCommon: GridColDef[] = [
         headerAlign: 'center',
     },
     {
-        field: 'online',
-        headerName: 'Status',
+        field: 'onlineStatus',
+        headerName: 'onlineStatus',
         flex: 0.8,
         headerClassName: 'data-grid-header',
         align: 'center',
