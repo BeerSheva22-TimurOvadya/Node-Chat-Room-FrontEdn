@@ -2,50 +2,9 @@ import { Observable, Subscriber } from 'rxjs';
 import Message from '../model/Message';
 import { AUTH_DATA_JWT } from './AuthServiceJwt';
 import MessagesService from './MessagesService';
+import { fetchRequest } from './httpService';
 
-async function getResponseText(response: Response): Promise<string> {
-    let res = '';
-    if (!response.ok) {
-        const { status } = response;
-        res = status === 401 || status === 403 ? 'Authentication' : await response.text();
-    }
-    return res;
-}
-function getHeaders(): HeadersInit {
-    const res: HeadersInit = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT) || ''}`,
-    };
-    return res;
-}
-async function fetchRequest(url: string, options: RequestInit, empl?: Message): Promise<Response> {
-    options.headers = getHeaders();
-    if (empl) {
-        options.body = JSON.stringify(empl);
-    }
 
-    let flUpdate = true;
-    let responseText = '';
-    try {
-        if (options.method == 'DELETE' || options.method == 'PUT') {
-            flUpdate = false;
-            await fetchRequest(url, { method: 'GET' });
-            flUpdate = true;
-        }
-
-        const response = await fetch(url, options);
-        responseText = await getResponseText(response);
-        if (responseText) {
-            throw responseText;
-        }
-        return response;
-    } catch (error: any) {
-        if (!flUpdate) {
-            throw error;
-        }
-        throw responseText ? responseText : 'Server is unavailable. Repeat later on';
-    }
-}
 async function fetchAllMessages(url: string): Promise<Message[] | string> {
     const response = await fetchRequest(url, {});
     return await response.json();

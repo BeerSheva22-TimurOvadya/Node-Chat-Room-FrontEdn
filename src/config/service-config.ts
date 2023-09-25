@@ -5,6 +5,6 @@ import MessagesServiceRest from '../service/MessagesServiceRest';
 import UsersService from '../service/UsersService';
 import UsersServiceRest from '../service/UsersServiceRest';
 
-export const authService: AuthService = new AuthServiceJwt('http://localhost:8080/users/login');
+export const authService: AuthService = new AuthServiceJwt('localhost:8080');
 export const messagesService: MessagesService = new MessagesServiceRest('localhost:8080/messages');
 export const usersService: UsersService = new UsersServiceRest('localhost:8080/users');
