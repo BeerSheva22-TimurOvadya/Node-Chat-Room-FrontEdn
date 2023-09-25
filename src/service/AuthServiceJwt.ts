@@ -59,4 +59,13 @@ export default class AuthServiceJwt implements AuthService {
         };
         
     }
+    reconnect() {
+        const jwt = localStorage.getItem(AUTH_DATA_JWT);
+        if (jwt) {
+            const jwtPayloadJSON = atob(jwt.split('.')[1]);
+            const jwtPayloadObj = JSON.parse(jwtPayloadJSON);
+            const email = jwtPayloadObj.sub;
+            this.connectToWebSocket(email);
+        }
+    }
 }

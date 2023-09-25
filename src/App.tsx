@@ -5,7 +5,7 @@ import SignIn from './components/pages/SignIn';
 import SignOut from './components/pages/SignOut';
 import './App.css';
 import { useSelectorAuth, useSelectorCode } from './redux/store';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import routesConfig from './config/routes-config.json';
 import NotFound from './components/pages/NotFound';
 import { RouteType } from './components/navigators/Navigator';
@@ -75,6 +75,9 @@ const App: React.FC = () => {
 
         return res;
     }
+    useEffect(() => {
+        authService.reconnect();
+    }, []);
     return (
         <BrowserRouter>
             <Routes>
