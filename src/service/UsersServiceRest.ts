@@ -12,6 +12,11 @@ async function fetchAllUsers(url: string): Promise<User[] | string> {
     return await response.json();
 }
 
+async function fetchAllUsersWithStatus(url: string): Promise<User[] | string> {
+    const response = await fetchRequest(`${url}/contacts`, {});    
+    return await response.json();
+}
+
 export default class UsersServiceRest implements UsersService {
     private observable: Observable<User[] | string> | null = null;
     private subscriber: Subscriber<string | User[]> | undefined;
