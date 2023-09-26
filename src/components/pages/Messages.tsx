@@ -10,6 +10,15 @@ import { Confirmation } from '../common/Confirmation';
 
 import { useDispatchCode, useSelectorMessages } from '../../hooks/hooks';
 const columnsCommon: GridColDef[] = [
+    
+    {
+        field: '_id',
+        headerName: 'ID',
+        flex: 0.7,
+        headerClassName: 'data-grid-header',
+        align: 'center',
+        headerAlign: 'center',
+    },
     {
         field: 'from',
         headerName: 'From',

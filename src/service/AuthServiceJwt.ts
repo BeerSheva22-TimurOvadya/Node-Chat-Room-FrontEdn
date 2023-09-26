@@ -20,7 +20,7 @@ export default class AuthServiceJwt implements AuthService {
 
     constructor(private baseUrl: string) {
         this.urlService = `http://${baseUrl}/users/login`;
-        this.urlWebsocket = `ws://${baseUrl}/contacts/websocket?clientName=`;
+        this.urlWebsocket = `ws://${baseUrl}/users/websocket?clientName=`;
     }
 
     async login(loginData: LoginData): Promise<UserData> {
@@ -51,6 +51,7 @@ export default class AuthServiceJwt implements AuthService {
         this.ws.onerror = (error) => {
             console.error(`WebSocket Error: ${error}`);
         };
+        
         
     }
     reconnect() {

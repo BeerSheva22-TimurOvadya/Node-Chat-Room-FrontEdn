@@ -24,7 +24,7 @@ export default class MessagesServiceRest implements MessagesService {
     private getUrlWithId(id: any): string {
         return `${this.urlService}/${id}`;
     }
-    private sibscriberNext(): void {
+    private subscriberNext(): void {
         fetchAllMessages(this.urlService)
             .then((messages) => {
                 this.subscriber?.next(messages);
@@ -40,7 +40,7 @@ export default class MessagesServiceRest implements MessagesService {
         if (!this.observable) {
             this.observable = new Observable<Message[] | string>((subscriber) => {
                 this.subscriber = subscriber;
-                this.sibscriberNext();
+                this.subscriberNext();
                 this.connectWS();
                 return () => this.disconnectWS();
             });
@@ -52,10 +52,11 @@ export default class MessagesServiceRest implements MessagesService {
     }
 
     private connectWS() {
-        this.webSocket = new WebSocket(this.urlWebsocket, localStorage.getItem(AUTH_DATA_JWT) || '');
-        this.webSocket.onmessage = (message) => {
-            console.log(message.data);
-            this.sibscriberNext();
+        this.webSocket = new WebSocket(this.urlWebsocket, localStorage.getItem(AUTH_DATA_JWT) || '');        
+        this.webSocket.onmessage = (message) => {            
+            const data = JSON.parse(message.data);
+            console.log(data);
+            this.subscriberNext();
         };
     }
 

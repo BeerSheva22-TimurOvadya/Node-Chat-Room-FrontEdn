@@ -12,10 +12,7 @@ async function fetchAllUsers(url: string): Promise<User[] | string> {
     return await response.json();
 }
 
-async function fetchAllUsersWithStatus(url: string): Promise<User[] | string> {
-    const response = await fetchRequest(`${url}/contacts`, {});    
-    return await response.json();
-}
+
 
 export default class UsersServiceRest implements UsersService {
     private observable: Observable<User[] | string> | null = null;
@@ -30,7 +27,7 @@ export default class UsersServiceRest implements UsersService {
     }
     
     
-    private sibscriberNext(): void {
+    private subscriberNext(): void {
         fetchAllUsers(this.urlService)
             .then((users) => {
                 this.subscriber?.next(users);
@@ -42,7 +39,7 @@ export default class UsersServiceRest implements UsersService {
         if (!this.observable) {
             this.observable = new Observable<User[] | string>((subscriber) => {
                 this.subscriber = subscriber;
-                this.sibscriberNext();
+                this.subscriberNext();
                 this.connectWS();
                 return () => this.disconnectWS();
             });
@@ -53,11 +50,11 @@ export default class UsersServiceRest implements UsersService {
         this.webSocket?.close();
     }
     private connectWS() {
-        this.webSocket = new WebSocket(this.urlWebsocket, localStorage.getItem(AUTH_DATA_JWT) || '');
-
-        this.webSocket.onmessage = (message) => {
-            console.log(message.data);
-            this.sibscriberNext();
+        this.webSocket = new WebSocket(this.urlWebsocket, localStorage.getItem(AUTH_DATA_JWT) || '');        
+        this.webSocket.onmessage = (message) => {            
+            const data = JSON.parse(message.data);
+            console.log(data);
+            this.subscriberNext();
         };
     }
     
