@@ -17,8 +17,8 @@ export default class MessagesServiceRest implements MessagesService {
     private urlWebsocket: string;
     private webSocket: WebSocket | undefined;
     constructor(baseUrl: string) {
-        this.urlService = `http://${baseUrl}`;
-        this.urlWebsocket = `ws://${baseUrl}/websocket`;
+        this.urlService = `http://${baseUrl}/messages`;
+        this.urlWebsocket = `ws://${baseUrl}/users/websocket`;
     }
     
     private getUrlWithId(id: any): string {
