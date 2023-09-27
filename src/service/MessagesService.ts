@@ -5,5 +5,6 @@ export default interface MessagesService {
     sendMessage(mes: Message): Promise<Message>;
     getMessages(): Observable<Message[] | string>;
     deleteMessage(id: any): Promise<void>;
+    setUserEmail(email: string): void
     
 }

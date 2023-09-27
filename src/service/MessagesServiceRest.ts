@@ -80,6 +80,10 @@ export default class MessagesServiceRest implements MessagesService {
         });
     }
 
+    setUserEmail(email: string): void {
+        this.userEmail = email;
+    }
+
     async sendMessage(empl: Message): Promise<Message> {
         if (this.webSocket && this.webSocket.readyState === WebSocket.OPEN) {
             

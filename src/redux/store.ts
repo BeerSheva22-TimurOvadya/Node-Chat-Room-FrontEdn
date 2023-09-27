@@ -5,12 +5,14 @@ import UserData from "../model/UserData";
 import { codeReducer } from "./slices/codeSlice";
 import CodeType from "../model/CodeType";
 import CodePayload from "../model/CodePayload";
+import updateUser from "./updateUser";
 
 export const store = configureStore({
     reducer: {
      authState: authReducer,
      codeState: codeReducer
-    }
+    } ,   
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(updateUser),
 });
 export function useSelectorAuth() {
     return useSelector<any, UserData>(state => state.authState.userData);
