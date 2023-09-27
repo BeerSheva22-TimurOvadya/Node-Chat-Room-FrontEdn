@@ -9,53 +9,52 @@ import { useSelectorAuth } from '../../redux/store';
 import { Confirmation } from '../common/Confirmation';
 
 import { useDispatchCode, useSelectorMessages } from '../../hooks/hooks';
-const columnsCommon: GridColDef[] = [
-    
-    {
-        field: '_id',
-        headerName: 'ID',
-        flex: 0.7,
-        headerClassName: 'data-grid-header',
-        align: 'center',
-        headerAlign: 'center',
-    },
-    {
-        field: 'from',
-        headerName: 'From',
-        flex: 0.7,
-        headerClassName: 'data-grid-header',
-        align: 'center',
-        headerAlign: 'center',
-    },
-    {
-        field: 'to',
-        headerName: 'To',
-        flex: 0.8,
-        headerClassName: 'data-grid-header',
-        align: 'center',
-        headerAlign: 'center',
-    },
-    {
-        field: 'text',
-        headerName: 'Text',
-        flex: 0.8,
-        headerClassName: 'data-grid-header',
-        align: 'center',
-        headerAlign: 'center',
-    },
-    {
-        field: 'timestamp',
-        headerName: 'Timestamp',
-        type: 'date',
-        flex: 0.6,
-        headerClassName: 'data-grid-header',
-        align: 'center',
-        headerAlign: 'center',
-    },
-];
+
 
 const Messages: React.FC = () => {
-    const columnsAdmin: GridColDef[] = [
+    const columnsCommon: GridColDef[] = [
+    
+        {
+            field: '_id',
+            headerName: 'ID',
+            flex: 0.7,
+            headerClassName: 'data-grid-header',
+            align: 'center',
+            headerAlign: 'center',
+        },
+        {
+            field: 'from',
+            headerName: 'From',
+            flex: 0.7,
+            headerClassName: 'data-grid-header',
+            align: 'center',
+            headerAlign: 'center',
+        },
+        {
+            field: 'to',
+            headerName: 'To',
+            flex: 0.8,
+            headerClassName: 'data-grid-header',
+            align: 'center',
+            headerAlign: 'center',
+        },
+        {
+            field: 'text',
+            headerName: 'Text',
+            flex: 0.8,
+            headerClassName: 'data-grid-header',
+            align: 'center',
+            headerAlign: 'center',
+        },
+        {
+            field: 'timestamp',
+            headerName: 'Timestamp',
+            type: 'date',
+            flex: 0.6,
+            headerClassName: 'data-grid-header',
+            align: 'center',
+            headerAlign: 'center',
+        },
         {
             field: 'actions',
             type: 'actions',
@@ -70,6 +69,7 @@ const Messages: React.FC = () => {
             },
         },
     ];
+    
     const dispatch = useDispatchCode();
     const userData = useSelectorAuth();
     const messages = useSelectorMessages();
@@ -82,9 +82,7 @@ const Messages: React.FC = () => {
     const confirmFn = useRef<any>(null);
     function getColumns(): GridColDef[] {
         let res: GridColDef[] = columnsCommon;
-        if (userData && userData.role === 'admin') {
-            res = res.concat(columnsAdmin);
-        }
+        
         return res;
     }
     function removeMessage(id: any) {

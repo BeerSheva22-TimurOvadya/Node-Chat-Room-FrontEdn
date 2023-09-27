@@ -65,8 +65,8 @@ export default class UsersServiceRest implements UsersService {
     }
    
 
-    deleteUser(username: string): Promise<string> {
-        return fetchRequest(`${this.urlService}/users/${username}`, { method: 'DELETE' })
+    async deleteUser(username: string): Promise<string> {
+        return fetchRequest(`${this.urlService}/${username}`, { method: 'DELETE' })
             .then(response => `User ${username} has been deleted`);
     }    
 

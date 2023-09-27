@@ -20,27 +20,17 @@ export async function fetchRequest<T>(url: string, options: RequestInit, body?: 
     options.headers = getHeaders();
     if (body) {
         options.body = JSON.stringify(body);
-    }
-
-    let flUpdate = true;
+    }    
     let responseText = '';
     try {
-        if (options.method === 'DELETE' || options.method === 'PUT') {
-            flUpdate = false;
-            await fetchRequest(url, { method: 'GET' });
-            flUpdate = true;
-        }
-
-        const response = await fetch(url, options);
+         const response = await fetch(url, options);
         responseText = await getResponseText(response);
         if (responseText) {
             throw responseText;
         }
         return response;
     } catch (error: any) {
-        if (!flUpdate) {
-            throw error;
-        }
+        
         throw responseText ? responseText : 'Server is unavailable. Repeat later on';
     }
 }
