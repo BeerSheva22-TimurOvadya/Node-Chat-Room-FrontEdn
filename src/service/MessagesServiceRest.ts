@@ -5,10 +5,13 @@ import MessagesService from './MessagesService';
 import { fetchRequest } from './httpService';
 
 
+
+
 async function fetchAllMessages(url: string): Promise<Message[] | string> {
     const response = await fetchRequest(url, {});
     return await response.json();
 }
+
 
 export default class MessagesServiceRest implements MessagesService {
     private observable: Observable<Message[] | string> | null = null;
@@ -16,9 +19,12 @@ export default class MessagesServiceRest implements MessagesService {
     private urlService: string;
     private urlWebsocket: string;
     private webSocket: WebSocket | undefined;
-    constructor(baseUrl: string) {
+    private userEmail: string;
+
+    constructor(baseUrl: string, userEmail: string) {
         this.urlService = `http://${baseUrl}/messages`;
         this.urlWebsocket = `ws://${baseUrl}/users/websocket`;
+        this.userEmail = userEmail;
     }
     
     private getUrlWithId(id: any): string {
@@ -31,11 +37,7 @@ export default class MessagesServiceRest implements MessagesService {
             })
             .catch((error) => this.subscriber?.next(error));
     }
-    async deleteMessage(id: any): Promise<void> {
-        await fetchRequest(this.getUrlWithId(id), {
-            method: 'DELETE',
-        });
-    }
+    
     getMessages(): Observable<Message[] | string> {
         if (!this.observable) {
             this.observable = new Observable<Message[] | string>((subscriber) => {
@@ -51,8 +53,20 @@ export default class MessagesServiceRest implements MessagesService {
         this.webSocket?.close();
     }
 
-    private connectWS() {
-        this.webSocket = new WebSocket(this.urlWebsocket, localStorage.getItem(AUTH_DATA_JWT) || '');        
+    // private connectWS() {
+    //     this.webSocket = new WebSocket(this.urlWebsocket, localStorage.getItem(AUTH_DATA_JWT) || '');        
+    //     this.webSocket.onmessage = (message) => {            
+    //         const data = JSON.parse(message.data);
+    //         console.log(data);
+    //         this.subscriberNext();
+    //     };
+    // }
+
+    private connectWS() {    
+        
+        
+        this.webSocket = new WebSocket(`${this.urlWebsocket}?clientName=${this.userEmail}`);
+            
         this.webSocket.onmessage = (message) => {            
             const data = JSON.parse(message.data);
             console.log(data);
@@ -60,17 +74,28 @@ export default class MessagesServiceRest implements MessagesService {
         };
     }
 
-    async addMessage(empl: Message): Promise<Message> {
-        if (empl._id === 0) {
-            delete empl._id;
-        }
-        const response = await fetchRequest(
-            this.urlService,
-            {
-                method: 'POST',
-            },
-            empl,
-        );
-        return response.json();
+    async deleteMessage(id: any): Promise<void> {
+        await fetchRequest(this.getUrlWithId(id), {
+            method: 'DELETE',
+        });
     }
+
+    async sendMessage(empl: Message): Promise<Message> {
+        if (this.webSocket && this.webSocket.readyState === WebSocket.OPEN) {
+            
+            this.webSocket.send(JSON.stringify({ to: empl.to, text: empl.text }));
+        } 
+        else {
+            
+            this.connectWS();
+            if (this.webSocket) {
+                this.webSocket.onopen = () => {
+                    this.webSocket?.send(JSON.stringify({ to: empl.to, text: empl.text }));
+                };
+            }
+        }
+        
+        return Promise.resolve(empl);
+    }
+    
 }

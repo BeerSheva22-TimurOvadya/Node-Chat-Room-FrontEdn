@@ -1,12 +1,12 @@
 {
     "always": [],
     "authenticated": [
-        { "to": "/messages", "label": "Messages Table", "order": 1 },
-        { "to": "/users", "label": "Users", "order": 3 },
-        { "to": "/signout", "label": "Sign Out", "order": 1000 }
+        { "to": "/users", "label": "Users", "order": 1 },
+        { "to": "/messages", "label": "Messages Table", "order": 2 },
+        { "to": "/messages/add", "label": "Send Message", "order": 3 },
+        { "to": "/signout", "label": "Sign Out", "order": 1000 }        
     ],
-    "admin": [
-        { "to": "/messages/add", "label": "Add Message", "order": 2 },
+    "admin": [       
         { "to": "/generation", "label": "Generate Messages", "order": 20 }
     ],
     "noadmin": [],

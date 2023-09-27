@@ -11,7 +11,7 @@ import NotFound from './components/pages/NotFound';
 import { RouteType } from './components/navigators/Navigator';
 import UserData from './model/UserData';
 import Messages from './components/pages/Messages';
-import AddMessage from './components/pages/AddMessage';
+import SendMessage from './components/pages/SendMessage';
 import { StatusType } from './model/StatusType';
 import CodeType from './model/CodeType';
 import { useDispatch } from 'react-redux';
@@ -86,7 +86,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<NavigatorDispatcher routes={routes} />}>
                     <Route path="Messages" element={<Messages />} />
                     <Route path="users" element={<Users />} />
-                    <Route path="messages/add" element={<AddMessage />} />
+                    <Route path="messages/add" element={<SendMessage />} />
                     <Route path="signin" element={<SignIn />} />
                     <Route path="signout" element={<SignOut />} />
                     <Route path="generation" element={<Generation />} />
