@@ -1,6 +1,5 @@
 import { Observable, Subscriber } from 'rxjs';
 import Message from '../model/Message';
-import { AUTH_DATA_JWT } from './AuthServiceJwt';
 import MessagesService from './MessagesService';
 import { fetchRequest } from './httpService';
 
@@ -53,14 +52,7 @@ export default class MessagesServiceRest implements MessagesService {
         this.webSocket?.close();
     }
 
-    // private connectWS() {
-    //     this.webSocket = new WebSocket(this.urlWebsocket, localStorage.getItem(AUTH_DATA_JWT) || '');        
-    //     this.webSocket.onmessage = (message) => {            
-    //         const data = JSON.parse(message.data);
-    //         console.log(data);
-    //         this.subscriberNext();
-    //     };
-    // }
+  
 
     private connectWS() {    
         
