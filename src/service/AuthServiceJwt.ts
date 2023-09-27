@@ -23,6 +23,8 @@ export default class AuthServiceJwt implements AuthService {
         this.urlWebsocket = `ws://${baseUrl}/users/websocket?clientName=`;
     }
 
+   
+
     async login(loginData: LoginData): Promise<UserData> {
         const serverLoginData = { username: loginData.email, password: loginData.password };
         
@@ -34,6 +36,34 @@ export default class AuthServiceJwt implements AuthService {
         }
         return userData;
     }
+
+    async register(loginData: LoginData): Promise<UserData> {
+        const urlRegisterService = `http://${this.baseUrl}/users`; 
+        const serverRegisterData = {
+            username: loginData.email,
+            password: loginData.password,
+           
+        };
+        
+        try {
+            const response = await fetchRequest(urlRegisterService, { method: 'POST' }, serverRegisterData);            
+            if (response.status !== 201) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error during registration');
+            }    
+            const userData = getUserData(await response.json());
+            if (userData) {
+                this.connectToWebSocket(userData.email);
+            }
+    
+            return userData;
+        } catch (error: any) {
+            throw new Error(error.message || 'Unknown error during registration');
+        }
+    }
+    
+
+    
     
     async logout(): Promise<void> {
         if (this.ws) {
@@ -54,6 +84,7 @@ export default class AuthServiceJwt implements AuthService {
         
         
     }
+
     reconnect() {
         const jwt = localStorage.getItem(AUTH_DATA_JWT);
         if (jwt) {
@@ -63,4 +94,5 @@ export default class AuthServiceJwt implements AuthService {
             this.connectToWebSocket(email);
         }
     }
+   
 }
