@@ -5,11 +5,15 @@ import { fetchRequest } from "./httpService";
 
 export const AUTH_DATA_JWT = 'auth-data-jwt';
 
+function extractJwtPayload(jwt: string) {
+    const jwtPayloadJSON = atob(jwt.split('.')[1]);
+    return JSON.parse(jwtPayloadJSON);
+}
+
 function getUserData(data: any): UserData {
     const jwt = data.accessToken;
     localStorage.setItem(AUTH_DATA_JWT, jwt);
-    const jwtPayloadJSON = atob(jwt.split('.')[1]);
-    const jwtPayloadObj = JSON.parse(jwtPayloadJSON);
+    const jwtPayloadObj = extractJwtPayload(jwt);
     return { email: jwtPayloadObj.sub, role: jwtPayloadObj.roles.includes("ADMIN") ? "admin" : "user" };
 }
 
@@ -41,8 +45,7 @@ export default class AuthServiceJwt implements AuthService {
         const urlRegisterService = `http://${this.baseUrl}/users`; 
         const serverRegisterData = {
             username: loginData.email,
-            password: loginData.password,
-           
+            password: loginData.password,           
         };
         
         try {
@@ -88,10 +91,8 @@ export default class AuthServiceJwt implements AuthService {
     reconnect() {
         const jwt = localStorage.getItem(AUTH_DATA_JWT);
         if (jwt) {
-            const jwtPayloadJSON = atob(jwt.split('.')[1]);
-            const jwtPayloadObj = JSON.parse(jwtPayloadJSON);
-            const email = jwtPayloadObj.sub;
-            this.connectToWebSocket(email);
+            const jwtPayloadObj = extractJwtPayload(jwt);
+            this.connectToWebSocket(jwtPayloadObj.sub);
         }
     }
    

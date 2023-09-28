@@ -1,13 +1,18 @@
-import { Box } from '@mui/material';
-import { useState, useRef, useMemo } from 'react';
+import {
+    Box,
+    Button,
+    ButtonGroup,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Typography
+} from '@mui/material';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { messagesService } from '../../config/service-config';
-
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-
 import { Delete } from '@mui/icons-material';
 import { useSelectorAuth } from '../../redux/store';
 import { Confirmation } from '../common/Confirmation';
-
 import { useDispatchCode, useSelectorMessages } from '../../hooks/hooks';
 
 
@@ -49,11 +54,11 @@ const Messages: React.FC = () => {
         {
             field: 'timestamp',
             headerName: 'Timestamp',
-            type: 'date',
             flex: 0.6,
             headerClassName: 'data-grid-header',
             align: 'center',
             headerAlign: 'center',
+            renderCell: (params) => new Date(params.value).toLocaleString(),
         },
         {
             field: 'actions',
@@ -73,18 +78,39 @@ const Messages: React.FC = () => {
     const dispatch = useDispatchCode();
     const userData = useSelectorAuth();
     const messages = useSelectorMessages();
-    const columns = useMemo(() => getColumns(), [userData, messages]);
+    const [filteredMessages, setFilteredMessages] = useState(messages);
+
+    const [openTextDialog, setOpenTextDialog] = useState(false);
+    const [selectedMessageText, setSelectedMessageText] = useState("");
+
+    const showMessageText = (text: string) => {
+        setSelectedMessageText(text);
+        setOpenTextDialog(true);
+    };
+
+    const closeMessageText = () => {
+        setOpenTextDialog(false);
+    };
+
+    const showAllMessages = () => {
+        setFilteredMessages(messages);
+    };
+
+    useEffect(() => {
+        setFilteredMessages(messages);
+    }, [messages]);
+
+    const columns = useMemo(() => columnsCommon, [userData, messages]);
 
     const [openConfirm, setOpenConfirm] = useState(false);
     const title = useRef('');
     const content = useRef('');
     const messageId = useRef('');
     const confirmFn = useRef<any>(null);
-    function getColumns(): GridColDef[] {
-        let res: GridColDef[] = columnsCommon;
-        
-        return res;
-    }
+
+
+  
+
     function removeMessage(id: any) {
         title.current = 'Remove Message object?';
         const message = messages.find((mess) => mess._id === id);
@@ -106,24 +132,69 @@ const Messages: React.FC = () => {
         setOpenConfirm(false);
     }
 
+    const showIncomingMessages = () => {
+        if(userData){
+            setFilteredMessages(messages.filter((message) => message.to === userData.email));
+        }
+        
+    };
+
+    const showOutgoingMessages = () => {
+        if(userData){
+            setFilteredMessages(messages.filter((message) => message.from === userData.email));
+        }
+        
+    };
+
     return (
         <Box
             sx={{
                 display: 'flex',
-                justifyContent: 'center',
-                alignContent: 'center',
+                flexDirection: 'column',
+                alignItems: 'center',
             }}
         >
-            <Box sx={{ height: '80vh', width: '95vw' }}>
-                <DataGrid columns={columns} rows={messages} getRowId={(row) => row._id} />
+            <ButtonGroup 
+                variant="contained" 
+                color="primary" 
+                aria-label="contained primary button group"
+                sx={{ marginBottom: 2 }}
+            >
+                <Button onClick={showIncomingMessages} sx={{ marginRight: 1 }}>Incoming</Button>
+                <Button onClick={showOutgoingMessages} sx={{ marginRight: 1 }}>Outgoing</Button>
+                <Button onClick={showAllMessages}>All</Button> {/* Новая кнопка */}
+            </ButtonGroup>
+
+            <Box sx={{ height: '80vh', width: '95vw', marginTop: 2 }}>
+                <DataGrid 
+                    columns={columns} 
+                    rows={filteredMessages} 
+                    getRowId={(row) => row._id}
+                    onRowClick={(params) => showMessageText(params.row.text)}
+                />
             </Box>
+
+            <Dialog
+                open={openTextDialog}
+                onClose={closeMessageText}
+            >
+                <DialogTitle>Message Content</DialogTitle>
+                <DialogContent>
+                    <Typography>{selectedMessageText}</Typography>
+                </DialogContent>
+            </Dialog>
+
             <Confirmation
                 confirmFn={confirmFn.current}
                 open={openConfirm}
                 title={title.current}
                 content={content.current}
-            ></Confirmation>
+            />
         </Box>
     );
 };
+
 export default Messages;
+
+
+
