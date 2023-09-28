@@ -2,30 +2,22 @@ import { Observable, Subscriber } from 'rxjs';
 import Message from '../model/Message';
 import MessagesService from './MessagesService';
 import { fetchRequest } from './httpService';
-
-
-
+import { sharedWebSocket } from './AuthServiceJwt';
 
 async function fetchAllMessages(url: string): Promise<Message[] | string> {
     const response = await fetchRequest(url, {});
     return await response.json();
 }
 
-
 export default class MessagesServiceRest implements MessagesService {
     private observable: Observable<Message[] | string> | null = null;
     private subscriber: Subscriber<string | Message[]> | undefined;
     private urlService: string;
-    private urlWebsocket: string;
-    private webSocket: WebSocket | undefined;
-    private userEmail: string;
 
-    constructor(baseUrl: string, userEmail: string) {
-        this.urlService = `http://${baseUrl}/messages`;
-        this.urlWebsocket = `ws://${baseUrl}/users/websocket`;
-        this.userEmail = userEmail;
+    constructor(baseUrl: string) {
+        this.urlService = `${baseUrl}`;
     }
-    
+
     private getUrlWithId(id: any): string {
         return `${this.urlService}/${id}`;
     }
@@ -36,34 +28,26 @@ export default class MessagesServiceRest implements MessagesService {
             })
             .catch((error) => this.subscriber?.next(error));
     }
-    
+
     getMessages(): Observable<Message[] | string> {
         if (!this.observable) {
             this.observable = new Observable<Message[] | string>((subscriber) => {
                 this.subscriber = subscriber;
                 this.subscriberNext();
                 this.connectWS();
-                return () => this.disconnectWS();
             });
         }
         return this.observable;
     }
-    private disconnectWS(): void {
-        this.webSocket?.close();
-    }
 
-  
-
-    private connectWS() {    
-        
-        
-        this.webSocket = new WebSocket(`${this.urlWebsocket}?clientName=${this.userEmail}`);
-            
-        this.webSocket.onmessage = (message) => {            
-            const data = JSON.parse(message.data);
-            console.log(data);
-            this.subscriberNext();
-        };
+    private connectWS() {
+        if (sharedWebSocket) {
+            sharedWebSocket.onmessage = (message) => {
+                const data = JSON.parse(message.data);
+                console.log(data);
+                this.subscriberNext();
+            };
+        }
     }
 
     async deleteMessage(id: any): Promise<void> {
@@ -72,26 +56,17 @@ export default class MessagesServiceRest implements MessagesService {
         });
     }
 
-    setUserEmail(email: string): void {
-        this.userEmail = email;
-    }
-
     async sendMessage(empl: Message): Promise<Message> {
-        if (this.webSocket && this.webSocket.readyState === WebSocket.OPEN) {
-            
-            this.webSocket.send(JSON.stringify({ to: empl.to, text: empl.text }));
-        } 
-        else {
-            
+        if (sharedWebSocket && sharedWebSocket.readyState === WebSocket.OPEN) {
+            sharedWebSocket.send(JSON.stringify({ to: empl.to, text: empl.text }));
+        } else {
             this.connectWS();
-            if (this.webSocket) {
-                this.webSocket.onopen = () => {
-                    this.webSocket?.send(JSON.stringify({ to: empl.to, text: empl.text }));
+            if (sharedWebSocket) {
+                sharedWebSocket.onopen = () => {
+                    sharedWebSocket?.send(JSON.stringify({ to: empl.to, text: empl.text }));
                 };
             }
         }
-        
         return Promise.resolve(empl);
     }
-    
 }

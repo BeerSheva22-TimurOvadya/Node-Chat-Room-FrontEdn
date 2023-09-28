@@ -6,10 +6,7 @@ import MessagesServiceRest from '../service/MessagesServiceRest';
 import UsersService from '../service/UsersService';
 import UsersServiceRest from '../service/UsersServiceRest';
 
-import { store } from '../redux/store'; 
 
-const userEmail = store.getState().authState.userData?.email || "";
-
-export const authService: AuthService = new AuthServiceJwt('localhost:8080');
-export const messagesService: MessagesService = new MessagesServiceRest('localhost:8080', userEmail);
-export const usersService: UsersService = new UsersServiceRest('localhost:8080/users');
+export const authService: AuthService = new AuthServiceJwt('localhost:8080/users');
+export const messagesService: MessagesService = new MessagesServiceRest('http://localhost:8080/messages');
+export const usersService: UsersService = new UsersServiceRest('http://localhost:8080/users');
