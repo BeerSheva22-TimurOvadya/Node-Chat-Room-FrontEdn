@@ -21,6 +21,7 @@ export default class MessagesServiceRest implements MessagesService {
     private getUrlWithId(id: any): string {
         return `${this.urlService}/${id}`;
     }
+    
     private subscriberNext(): void {
         fetchAllMessages(this.urlService)
             .then((messages) => {

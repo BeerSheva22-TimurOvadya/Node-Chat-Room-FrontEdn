@@ -9,6 +9,7 @@ async function getResponseText(response: Response): Promise<string> {
     return res;
 }
 
+
 function getHeaders(): HeadersInit {
     return {
         'Content-Type': 'application/json',

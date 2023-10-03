@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelectorMessages, useSelectorUsers } from '../../hooks/hooks';
 import { messagesService } from '../../config/service-config';
 import { Box, List, ListItemButton, ListItemText, TextField, Button, Paper } from '@mui/material';
@@ -6,6 +6,7 @@ import Message from '../../model/Message';
 import MessageForm from '../common/MessageForm';
 import User from '../../model/User';
 import { useSelector } from 'react-redux';
+import { Menu, MenuItem } from '@mui/material';
 
 const Chat: React.FC = () => {
     const users = useSelectorUsers();
@@ -14,6 +15,7 @@ const Chat: React.FC = () => {
     const messages = useSelectorMessages();
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [messageText, setMessageText] = useState<string>('');
+    const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
 
     const handleUserSelect = (username: string) => {
         setSelectedUser(username);
@@ -33,6 +35,41 @@ const Chat: React.FC = () => {
             } catch (err) {
                 console.error('Failed to send message:', err);
             }
+        }
+    };
+
+    const messagesEndRef = useRef<null | HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+
+    const handleOpenContextMenu = (event: React.MouseEvent<HTMLDivElement>, messageId: string) => {
+        event.preventDefault();
+        setMenuPosition({ top: event.clientY, left: event.clientX });
+        setSelectedMessageId(messageId);
+    };
+
+    const handleCloseContextMenu = () => {
+        setMenuPosition(null); // <-- Добавьте эту строку
+        setSelectedMessageId(null);
+    };
+
+    const handleDeleteMessage = async () => {
+        if (selectedMessageId) {
+            try {
+                await messagesService.deleteMessage(selectedMessageId);
+            } catch (err) {
+                console.error('Failed to delete message:', err);
+            }
+            handleCloseContextMenu();
         }
     };
 
@@ -57,7 +94,7 @@ const Chat: React.FC = () => {
                             <ListItemText
                                 primary={user.username}
                                 style={{
-                                    color: user.onlineStatus === 'online' ? 'green' : 'black',
+                                    color: user.onlineStatus === 'ONLINE' ? 'green' : 'black',
                                 }}
                             />
                         </ListItemButton>
@@ -76,10 +113,22 @@ const Chat: React.FC = () => {
                     }}
                 >
                     {messages
-                        .filter((m) => m.from === selectedUser || m.to === selectedUser)
+                        .filter(
+                            (m) =>
+                                (m.from === senderEmail && m.to === selectedUser) ||
+                                (m.to === senderEmail && m.from === selectedUser),
+                        )
                         .map((message, index) => (
-                            <MessageForm key={message._id || index} msg={message} />
+                            <div
+                                key={message._id || index}
+                                onContextMenu={(e) =>
+                                    message.from === senderEmail && handleOpenContextMenu(e, message._id)
+                                }
+                            >
+                                <MessageForm msg={message} />
+                            </div>
                         ))}
+                    <div ref={messagesEndRef}></div>
                 </Paper>
                 <Paper elevation={5} style={{ padding: '10px', display: 'flex', marginRight: '20px' }}>
                     <TextField
@@ -106,6 +155,16 @@ const Chat: React.FC = () => {
                         Send
                     </Button>
                 </Paper>
+                <Menu
+                    open={Boolean(menuPosition)}
+                    onClose={handleCloseContextMenu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={menuPosition ? menuPosition : undefined}
+                >
+                    <MenuItem onClick={handleDeleteMessage} style={{ color: 'red' }}>
+                        DELETE
+                    </MenuItem>
+                </Menu>
             </Box>
         </Box>
     );
