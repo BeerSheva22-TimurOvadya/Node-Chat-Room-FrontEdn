@@ -35,7 +35,7 @@ const SendMessage: React.FC = () => {
         if (recipient && message) {
             try {
                 const newMessage: Message = {
-                    from: senderEmail, // Используйте email отправителя
+                    from: senderEmail, 
                     to: recipient,
                     text: message,
                     timestamp: new Date(),

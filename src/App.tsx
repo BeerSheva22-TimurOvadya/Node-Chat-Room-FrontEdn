@@ -21,6 +21,7 @@ import { Alert, Snackbar } from '@mui/material';
 import { codeActions } from './redux/slices/codeSlice';
 import Generation from './components/pages/Generation';
 import Users from './components/pages/Users';
+import Chat from './components/pages/Сhat';
 const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
 type RouteTypeOrder = RouteType & { order?: number };
 function getRoutes(userData: UserData): RouteType[] {
@@ -86,6 +87,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<NavigatorDispatcher routes={routes} />}>
                     <Route path="Messages" element={<Messages />} />
                     <Route path="users" element={<Users />} />
+                    <Route path="chat" element={<Chat />} />
                     <Route path="messages/add" element={<SendMessage />} />
                     <Route path="signin" element={<SignIn />} />
                     <Route path="signout" element={<SignOut />} />

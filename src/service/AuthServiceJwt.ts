@@ -20,7 +20,6 @@ function getUserData(data: any): UserData {
 export let sharedWebSocket: WebSocket | null = null;
 
 export default class AuthServiceJwt implements AuthService {
-    
     private urlService: string;
     private urlWebsocket: string;
 

@@ -4,6 +4,7 @@
         { "to": "/users", "label": "Users", "order": 1 },
         { "to": "/messages", "label": "Messages Table", "order": 2 },
         { "to": "/messages/add", "label": "Send Message", "order": 3 },
+        { "to": "/chat", "label": "Chat", "order": 1 },
         { "to": "/signout", "label": "Sign Out", "order": 1000 }        
     ],
     "admin": [       
