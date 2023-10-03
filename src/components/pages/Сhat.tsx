@@ -48,7 +48,7 @@ const Chat: React.FC = () => {
         scrollToBottom();
     }, [messages]);
 
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    
     const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 
     const handleOpenContextMenu = (event: React.MouseEvent<HTMLDivElement>, messageId: string) => {
@@ -58,7 +58,7 @@ const Chat: React.FC = () => {
     };
 
     const handleCloseContextMenu = () => {
-        setMenuPosition(null); // <-- Добавьте эту строку
+        setMenuPosition(null); 
         setSelectedMessageId(null);
     };
 
