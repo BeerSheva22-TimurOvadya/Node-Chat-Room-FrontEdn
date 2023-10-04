@@ -1,17 +1,14 @@
-import { Avatar, Box, Paper, Typography } from '@mui/material';
+import { Box, Paper, Typography } from '@mui/material';
 
 type Props = {
     msg: any;
 };
-const AUTH_ITEM = 'auth-item';
 
+const AUTH_ITEM = 'auth-item';
 const currentUser = JSON.parse(localStorage.getItem(AUTH_ITEM) || '{}');
 
 const MessageForm: React.FC<Props> = ({ msg }) => {
-    const message = msg || JSON.parse('{}');
-    
-
-    const isMyMessage: Boolean = msg.from == currentUser.email;
+    const isMyMessage: Boolean = msg.from === currentUser.email;
 
     return (
         <Box
@@ -19,6 +16,8 @@ const MessageForm: React.FC<Props> = ({ msg }) => {
                 display: 'flex',
                 justifyContent: isMyMessage ? 'flex-end' : 'flex-start',
                 mb: 2,
+                mr: isMyMessage ? 1 : 0,  
+                ml: isMyMessage ? 0 : 1, 
             }}
         >
             <Box
@@ -28,20 +27,20 @@ const MessageForm: React.FC<Props> = ({ msg }) => {
                     alignItems: 'center',
                 }}
             >
-                <Avatar sx={{ bgcolor: isMyMessage ? 'secondary.main' : 'primary.main' }}>
-                    {msg.from}
-                </Avatar>
                 <Paper
                     variant="outlined"
                     sx={{
                         p: 2,
                         ml: isMyMessage ? 1 : 0,
                         mr: isMyMessage ? 0 : 1,
-                        backgroundColor: isMyMessage ? 'secondary.light' : 'primary.light',
+                        backgroundColor: isMyMessage ? 'lightgreen' : 'lightgray', 
                         borderRadius: isMyMessage ? '20px 20px 5px 20px' : '20px 20px 20px 5px',
                     }}
                 >
-                    <Typography variant="body1">{message.text}</Typography>
+                    <Typography variant="body1" component="div">
+                        <strong>{msg.from}:</strong> 
+                        <div>{msg.text}</div>
+                    </Typography>
                     <Typography variant="overline">
                         {new Date(msg.timestamp).toLocaleString()}
                     </Typography>

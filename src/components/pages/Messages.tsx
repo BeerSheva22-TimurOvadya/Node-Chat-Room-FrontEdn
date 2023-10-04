@@ -17,16 +17,8 @@ import { useDispatchCode, useSelectorMessages } from '../../hooks/hooks';
 
 
 const Messages: React.FC = () => {
-    const columnsCommon: GridColDef[] = [
-    
-        {
-            field: '_id',
-            headerName: 'ID',
-            flex: 0.7,
-            headerClassName: 'data-grid-header',
-            align: 'center',
-            headerAlign: 'center',
-        },
+    const columnsCommon: GridColDef[] = [    
+        
         {
             field: 'from',
             headerName: 'From',
@@ -59,6 +51,14 @@ const Messages: React.FC = () => {
             align: 'center',
             headerAlign: 'center',
             renderCell: (params) => new Date(params.value).toLocaleString(),
+        },
+        {
+            field: 'read',
+            headerName: 'Status',
+            flex: 0.7,
+            headerClassName: 'data-grid-header',
+            align: 'center',
+            headerAlign: 'center',
         },
         {
             field: 'actions',

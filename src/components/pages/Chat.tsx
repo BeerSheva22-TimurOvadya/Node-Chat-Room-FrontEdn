@@ -3,23 +3,46 @@ import { useSelectorMessages, useSelectorUsers } from '../../hooks/hooks';
 import { messagesService } from '../../config/service-config';
 import { Box, List, ListItemButton, ListItemText, TextField, Button, Paper } from '@mui/material';
 import Message from '../../model/Message';
-import MessageForm from '../common/MessageForm';
+import MessageForm from '../common/Message';
 import User from '../../model/User';
 import { useSelector } from 'react-redux';
 import { Menu, MenuItem } from '@mui/material';
 
 const Chat: React.FC = () => {
     const users = useSelectorUsers();
-    console.log("CHATS", users)
+    console.log('CHATS', users);
     const authData = useSelector((state: any) => state.authState.userData);
     const senderEmail = authData?.email;
     const messages = useSelectorMessages();
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [messageText, setMessageText] = useState<string>('');
     const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
+    const [unreadMessageCounts, setUnreadMessageCounts] = useState<Record<string, number>>({});
 
-    const handleUserSelect = (username: string) => {
+    const handleUserSelect = async (username: string) => {
         setSelectedUser(username);
+
+        const messagesFromUser = messages.filter(
+            (m) => m.from === username && m.to === senderEmail && !m.read,
+        );
+
+        if (messagesFromUser.length > 0) {
+            await messagesService.markAsRead(username);
+
+            calculateUnreadMessageCounts(messages);
+        }
+    };
+
+    const calculateUnreadMessageCounts = (msgs: Message[]) => {
+        const counts: Record<string, number> = {};
+
+        msgs.forEach((msg) => {
+            if (!msg.read && msg.to === senderEmail) {
+                counts[msg.from] = (counts[msg.from] || 0) + 1;
+            }
+        });
+
+        setUnreadMessageCounts(counts);
     };
 
     const handleSendMessage = async () => {
@@ -47,6 +70,10 @@ const Chat: React.FC = () => {
 
     useEffect(() => {
         scrollToBottom();
+    }, [messages]);
+
+    useEffect(() => {
+        calculateUnreadMessageCounts(messages);
     }, [messages]);
 
     const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
@@ -86,29 +113,33 @@ const Chat: React.FC = () => {
                 }}
             >
                 <List>
-                    {users.map(
-                        (user: User) => (
-                            console.log('Status', user.username, user.onlineStatus),
-                            (
-                                <ListItemButton
-                                    key={user.username}
-                                    onClick={() => handleUserSelect(user.username)}
-                                >
-                                    <ListItemText
-                                        primary={user.username}
-                                        style={{
-                                            color:
-                                                user.status === 'BLOCKED'
-                                                    ? 'red'
-                                                    : user.onlineStatus === 'ONLINE'
-                                                    ? 'green'
-                                                    : 'black',
-                                        }}
-                                    />
-                                </ListItemButton>
-                            )
-                        ),
-                    )}
+                    {users.map((user: User) => (
+                        <ListItemButton
+                            key={user.username}
+                            onClick={() => handleUserSelect(user.username)}
+                        >
+                            <ListItemText
+                                primary={
+                                    <>
+                                        {user.nickname}
+                                        {unreadMessageCounts[user.nickname] ? (
+                                            <span style={{ marginLeft: 8, color: 'red' }}>
+                                                {unreadMessageCounts[user.nickname]}
+                                            </span>
+                                        ) : null}
+                                    </>
+                                }
+                                style={{
+                                    color:
+                                        user.status === 'BLOCKED'
+                                            ? 'red'
+                                            : user.onlineStatus === 'ONLINE'
+                                            ? 'green'
+                                            : 'black',
+                                }}
+                            />
+                        </ListItemButton>
+                    ))}
                 </List>
             </Paper>
             <Box display="flex" flexDirection="column" flex="1" height="85vh">
@@ -132,7 +163,7 @@ const Chat: React.FC = () => {
                             <div
                                 key={message._id || index}
                                 onContextMenu={(e) =>
-                                    message.from === senderEmail && handleOpenContextMenu(e, message._id)
+                                    handleOpenContextMenu(e, message._id)
                                 }
                             >
                                 <MessageForm msg={message} />

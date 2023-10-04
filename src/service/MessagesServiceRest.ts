@@ -70,4 +70,12 @@ export default class MessagesServiceRest implements MessagesService {
         }
         return Promise.resolve(empl);
     }
+
+    async markAsRead(sender: string): Promise<void> {
+        await fetchRequest(`${this.urlService}/mark-as-read/${sender}`, {
+            method: 'PUT',
+        });
+    }
+
+    
 }

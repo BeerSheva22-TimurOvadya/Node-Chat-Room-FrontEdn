@@ -52,4 +52,16 @@ export default class UsersServiceRest implements UsersService {
             (response) => `User ${username} has been deleted`,
         );
     }
+
+    async updateUserStatus(username: string, newStatus: string): Promise<string> {
+        return fetchRequest(`${this.urlService}/${username}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ status: newStatus }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(
+            (response) => `User ${username} status was changed to ${newStatus}`,
+        );
+    }
 }
