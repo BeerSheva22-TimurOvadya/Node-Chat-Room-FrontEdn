@@ -32,6 +32,7 @@ export default class UsersServiceRest implements UsersService {
                 this.subscriber = subscriber;
                 this.subscriberNext();
                 this.connectWS();
+                
             });
         }
         return this.observable;

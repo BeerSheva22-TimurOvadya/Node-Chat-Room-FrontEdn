@@ -7,6 +7,7 @@ import MessageForm from '../common/Message';
 import User from '../../model/User';
 import { useSelector } from 'react-redux';
 import { Menu, MenuItem } from '@mui/material';
+import MessageInput from '../common/MessageInput';
 
 const Chat: React.FC = () => {
     const users = useSelectorUsers();
@@ -28,34 +29,32 @@ const Chat: React.FC = () => {
 
         if (messagesFromUser.length > 0) {
             await messagesService.markAsRead(username);
-
             calculateUnreadMessageCounts(messages);
         }
     };
 
     const calculateUnreadMessageCounts = (msgs: Message[]) => {
         const counts: Record<string, number> = {};
-
         msgs.forEach((msg) => {
             if (!msg.read && msg.to === senderEmail) {
                 counts[msg.from] = (counts[msg.from] || 0) + 1;
             }
         });
-
+        
+        console.log("READ", counts)
         setUnreadMessageCounts(counts);
     };
 
-    const handleSendMessage = async () => {
-        if (selectedUser && messageText) {
+    const handleSendMessage = async (text: string) => {
+        if (selectedUser && text) {
             try {
                 const newMessage: Message = {
                     from: senderEmail,
                     to: selectedUser,
-                    text: messageText,
+                    text: text,
                     timestamp: new Date(),
                 };
                 await messagesService.sendMessage(newMessage);
-                setMessageText('');
             } catch (err) {
                 console.error('Failed to send message:', err);
             }
@@ -70,11 +69,11 @@ const Chat: React.FC = () => {
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages]);
+    }, [messages] );
 
     useEffect(() => {
-        calculateUnreadMessageCounts(messages);
-    }, [messages]);
+        calculateUnreadMessageCounts(messages);        
+    }, [messages] );
 
     const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 
@@ -122,9 +121,9 @@ const Chat: React.FC = () => {
                                 primary={
                                     <>
                                         {user.nickname}
-                                        {unreadMessageCounts[user.nickname] ? (
+                                        {unreadMessageCounts[user.username] ? (
                                             <span style={{ marginLeft: 8, color: 'red' }}>
-                                                {unreadMessageCounts[user.nickname]}
+                                                {unreadMessageCounts[user.username]}
                                             </span>
                                         ) : null}
                                     </>
@@ -162,40 +161,14 @@ const Chat: React.FC = () => {
                         .map((message, index) => (
                             <div
                                 key={message._id || index}
-                                onContextMenu={(e) =>
-                                    handleOpenContextMenu(e, message._id)
-                                }
+                                onContextMenu={(e) => handleOpenContextMenu(e, message._id)}
                             >
                                 <MessageForm msg={message} />
                             </div>
                         ))}
                     <div ref={messagesEndRef}></div>
                 </Paper>
-                <Paper elevation={5} style={{ padding: '10px', display: 'flex', marginRight: '20px' }}>
-                    <TextField
-                        value={messageText}
-                        onChange={(e) => setMessageText(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.altKey && messageText.trim()) {
-                                handleSendMessage();
-                                e.preventDefault();
-                            } else if (e.key === 'Enter' && e.altKey) {
-                                setMessageText((prev: any) => prev + '\n');
-                            }
-                        }}
-                        variant="outlined"
-                        fullWidth
-                        multiline
-                    />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleSendMessage}
-                        style={{ marginLeft: '10px' }}
-                    >
-                        Send
-                    </Button>
-                </Paper>
+                <MessageInput onSendMessage={handleSendMessage} />
                 <Menu
                     open={Boolean(menuPosition)}
                     onClose={handleCloseContextMenu}
