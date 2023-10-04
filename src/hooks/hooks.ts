@@ -4,6 +4,7 @@ import CodeType from '../model/CodeType';
 import { codeActions } from '../redux/slices/codeSlice';
 import { useEffect, useState } from 'react';
 import Message from '../model/Message';
+import { useSelector } from 'react-redux';
 import { Subscription } from 'rxjs';
 import { messagesService, usersService } from '../config/service-config';
 import User from '../model/User';
@@ -73,6 +74,6 @@ export function useSelectorUsers() {
         
         return () => subscription.unsubscribe();
     }, []);
-    
+    console.log("HOOK", users)
     return users;
 }

@@ -62,6 +62,7 @@ const Users: React.FC = () => {
     const dispatch = useDispatchCode();
     const userData = useSelectorAuth();
     const users = useSelectorUsers();
+    console.log("USERS", users)
     const columns = useMemo(() => getColumns(), [userData, users]);
 
     const [openConfirm, setOpenConfirm] = useState(false);

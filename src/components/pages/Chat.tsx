@@ -10,6 +10,7 @@ import { Menu, MenuItem } from '@mui/material';
 
 const Chat: React.FC = () => {
     const users = useSelectorUsers();
+    console.log("CHATS", users)
     const authData = useSelector((state: any) => state.authState.userData);
     const senderEmail = authData?.email;
     const messages = useSelectorMessages();
@@ -48,7 +49,6 @@ const Chat: React.FC = () => {
         scrollToBottom();
     }, [messages]);
 
-    
     const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 
     const handleOpenContextMenu = (event: React.MouseEvent<HTMLDivElement>, messageId: string) => {
@@ -58,7 +58,7 @@ const Chat: React.FC = () => {
     };
 
     const handleCloseContextMenu = () => {
-        setMenuPosition(null); 
+        setMenuPosition(null);
         setSelectedMessageId(null);
     };
 
@@ -86,19 +86,29 @@ const Chat: React.FC = () => {
                 }}
             >
                 <List>
-                    {users.map((user: User) => (
-                        <ListItemButton
-                            key={user.username}
-                            onClick={() => handleUserSelect(user.username)}
-                        >
-                            <ListItemText
-                                primary={user.username}
-                                style={{
-                                    color: user.onlineStatus === 'ONLINE' ? 'green' : 'black',
-                                }}
-                            />
-                        </ListItemButton>
-                    ))}
+                    {users.map(
+                        (user: User) => (
+                            console.log('Status', user.username, user.onlineStatus),
+                            (
+                                <ListItemButton
+                                    key={user.username}
+                                    onClick={() => handleUserSelect(user.username)}
+                                >
+                                    <ListItemText
+                                        primary={user.username}
+                                        style={{
+                                            color:
+                                                user.status === 'BLOCKED'
+                                                    ? 'red'
+                                                    : user.onlineStatus === 'ONLINE'
+                                                    ? 'green'
+                                                    : 'black',
+                                        }}
+                                    />
+                                </ListItemButton>
+                            )
+                        ),
+                    )}
                 </List>
             </Paper>
             <Box display="flex" flexDirection="column" flex="1" height="85vh">

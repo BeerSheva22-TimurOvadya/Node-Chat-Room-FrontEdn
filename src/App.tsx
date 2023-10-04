@@ -21,7 +21,7 @@ import { Alert, Snackbar } from '@mui/material';
 import { codeActions } from './redux/slices/codeSlice';
 import Generation from './components/pages/Generation';
 import Users from './components/pages/Users';
-import Chat from './components/pages/Сhat';
+import Chat from './components/pages/Chat';
 const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
 type RouteTypeOrder = RouteType & { order?: number };
 function getRoutes(userData: UserData): RouteType[] {
