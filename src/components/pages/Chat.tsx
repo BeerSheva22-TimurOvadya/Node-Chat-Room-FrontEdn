@@ -15,8 +15,7 @@ const Chat: React.FC = () => {
     const authData = useSelector((state: any) => state.authState.userData);
     const senderEmail = authData?.email;
     const messages = useSelectorMessages();
-    const [selectedUser, setSelectedUser] = useState<string | null>(null);
-    const [messageText, setMessageText] = useState<string>('');
+    const [selectedUser, setSelectedUser] = useState<string | null>(null);    
     const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
     const [unreadMessageCounts, setUnreadMessageCounts] = useState<Record<string, number>>({});
 
@@ -40,8 +39,8 @@ const Chat: React.FC = () => {
                 counts[msg.from] = (counts[msg.from] || 0) + 1;
             }
         });
-        
-        console.log("READ", counts)
+
+        console.log('READ', counts);
         setUnreadMessageCounts(counts);
     };
 
@@ -65,15 +64,19 @@ const Chat: React.FC = () => {
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+    };   
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages] );
+    }, [messages]);
 
     useEffect(() => {
-        calculateUnreadMessageCounts(messages);        
-    }, [messages] );
+        calculateUnreadMessageCounts(messages);
+    }, [messages]);
+
+    
+
+    
 
     const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 
@@ -149,7 +152,7 @@ const Chat: React.FC = () => {
                         marginBottom: '10px',
                         marginRight: '20px',
                         maxHeight: '800px',
-                        overflow: 'auto',
+                        overflow: 'auto',                        
                     }}
                 >
                     {messages
@@ -157,6 +160,9 @@ const Chat: React.FC = () => {
                             (m) =>
                                 (m.from === senderEmail && m.to === selectedUser) ||
                                 (m.to === senderEmail && m.from === selectedUser),
+                        )
+                        .sort(
+                            (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
                         )
                         .map((message, index) => (
                             <div

@@ -15,7 +15,7 @@ const MessageForm: React.FC<Props> = ({ msg }) => {
             sx={{
                 display: 'flex',
                 justifyContent: isMyMessage ? 'flex-end' : 'flex-start',
-                mb: 2,
+                mb: 1,
                 mr: isMyMessage ? 1 : 0,  
                 ml: isMyMessage ? 0 : 1, 
             }}
@@ -30,9 +30,7 @@ const MessageForm: React.FC<Props> = ({ msg }) => {
                 <Paper
                     variant="outlined"
                     sx={{
-                        p: 2,
-                        ml: isMyMessage ? 1 : 0,
-                        mr: isMyMessage ? 0 : 1,
+                        p: 2,                       
                         backgroundColor: isMyMessage ? 'lightgreen' : 'lightgray', 
                         borderRadius: isMyMessage ? '20px 20px 5px 20px' : '20px 20px 20px 5px',
                     }}
