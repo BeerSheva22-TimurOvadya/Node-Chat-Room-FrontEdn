@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelectorMessages, useSelectorUsers } from '../../hooks/hooks';
-import { messagesService } from '../../config/service-config';
+import { serverService } from '../../config/service-config';
 import { Box, List, ListItemButton, ListItemText, TextField, Button, Paper } from '@mui/material';
 import Message from '../../model/Message';
 import MessageForm from '../common/Message';
@@ -27,7 +27,7 @@ const Chat: React.FC = () => {
         );
 
         if (messagesFromUser.length > 0) {
-            await messagesService.markAsRead(username);
+            await serverService.markAsRead(username);
             calculateUnreadMessageCounts(messages);
         }
     };
@@ -53,7 +53,7 @@ const Chat: React.FC = () => {
                     text: text,
                     timestamp: new Date(),
                 };
-                await messagesService.sendMessage(newMessage);
+                await serverService.sendMessage(newMessage);
             } catch (err) {
                 console.error('Failed to send message:', err);
             }
@@ -94,7 +94,7 @@ const Chat: React.FC = () => {
     const handleDeleteMessage = async () => {
         if (selectedMessageId) {
             try {
-                await messagesService.deleteMessage(selectedMessageId);
+                await serverService.deleteMessage(selectedMessageId);
             } catch (err) {
                 console.error('Failed to delete message:', err);
             }

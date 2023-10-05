@@ -76,10 +76,7 @@ const App: React.FC = () => {
         return res;
     }
 
-    useEffect(() => {
-        authService.reconnect();
-    }, []);
-
+   
     return (
         <BrowserRouter>
             <Routes>

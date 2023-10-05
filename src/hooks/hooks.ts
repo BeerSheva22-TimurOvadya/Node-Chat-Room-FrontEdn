@@ -1,12 +1,10 @@
 import { useDispatch } from 'react-redux';
-import CodePayload from '../model/CodePayload';
 import CodeType from '../model/CodeType';
 import { codeActions } from '../redux/slices/codeSlice';
 import { useEffect, useState } from 'react';
 import Message from '../model/Message';
-import { useSelector } from 'react-redux';
 import { Subscription } from 'rxjs';
-import { messagesService, usersService } from '../config/service-config';
+import { serverService } from '../config/service-config';
 import User from '../model/User';
 
 
@@ -40,7 +38,7 @@ export function useSelectorMessages() {
     const [messages, setMessages] = useState<Message[]>([]);
     
     useEffect(() => {
-        const subscription: Subscription = messagesService.getMessages().subscribe({
+        const subscription: Subscription = serverService.getMessages().subscribe({
             next(response: Message[] | string) {
                 if (typeof response === 'string') {
                     dispatch(response, '');
@@ -62,7 +60,7 @@ export function useSelectorUsers() {
     const [users, setUsers] = useState<User[]>([]);
     
     useEffect(() => {
-        const subscription: Subscription = usersService.getAllAccounts().subscribe({
+        const subscription: Subscription = serverService.getAllAccounts().subscribe({
             next(response: User[] | string) {
                 if (typeof response === 'string') {
                     dispatch(response, '');

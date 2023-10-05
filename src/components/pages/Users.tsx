@@ -1,6 +1,6 @@
 import { Box, MenuItem } from '@mui/material';
 import { useState, useRef, useMemo } from 'react';
-import { usersService } from '../../config/service-config';
+import { serverService } from '../../config/service-config';
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 import { Delete } from '@mui/icons-material';
 import { useSelectorAuth } from '../../redux/store';
@@ -116,7 +116,7 @@ const Users: React.FC = () => {
     }
     async function actualStatusChange(username: string, newStatus: string) {
         try {
-            await usersService.updateUserStatus(username, newStatus);
+            await serverService.updateUserStatus(username, newStatus);
         } catch (error: any) {
             dispatch(error, '');
         }
@@ -143,7 +143,7 @@ const Users: React.FC = () => {
         let errorUser: string = '';
         if (isOk) {
             try {
-                await usersService.deleteUser(userId.current);
+                await serverService.deleteUser(userId.current);
             } catch (error: any) {
                 errorUser = error;
             }

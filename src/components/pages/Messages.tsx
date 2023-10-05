@@ -8,7 +8,7 @@ import {
     Typography
 } from '@mui/material';
 import { useState, useRef, useMemo, useEffect } from 'react';
-import { messagesService } from '../../config/service-config';
+import { serverService } from '../../config/service-config';
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 import { Delete } from '@mui/icons-material';
 import { useSelectorAuth } from '../../redux/store';
@@ -123,7 +123,7 @@ const Messages: React.FC = () => {
         let errorMessage: string = '';
         if (isOk) {
             try {
-                await messagesService.deleteMessage(messageId.current);
+                await serverService.deleteMessage(messageId.current);
             } catch (error: any) {
                 errorMessage = error;
             }

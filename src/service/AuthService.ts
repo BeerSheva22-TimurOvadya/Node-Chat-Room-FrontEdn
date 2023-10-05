@@ -5,5 +5,5 @@ export default interface AuthService {
     login(loginData: LoginData):Promise<UserData>;
     logout():Promise<void>
     register(loginData: LoginData): Promise<UserData>;
-    reconnect():any
+
 }
