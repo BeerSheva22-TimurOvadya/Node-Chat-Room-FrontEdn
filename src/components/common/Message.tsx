@@ -2,13 +2,15 @@ import { Box, Paper, Typography } from '@mui/material';
 
 type Props = {
     msg: any;
+    findNicknameByEmail: (email: string) => string;
 };
 
 const AUTH_ITEM = 'auth-item';
 const currentUser = JSON.parse(localStorage.getItem(AUTH_ITEM) || '{}');
 
-const MessageForm: React.FC<Props> = ({ msg }) => {
+const MessageForm: React.FC<Props> = ({ msg, findNicknameByEmail }) => {
     const isMyMessage: Boolean = msg.from === currentUser.email;
+    const nickname = findNicknameByEmail(msg.from);
 
     return (
         <Box
@@ -16,8 +18,8 @@ const MessageForm: React.FC<Props> = ({ msg }) => {
                 display: 'flex',
                 justifyContent: isMyMessage ? 'flex-end' : 'flex-start',
                 mb: 1,
-                mr: isMyMessage ? 1 : 0,  
-                ml: isMyMessage ? 0 : 1, 
+                mr: isMyMessage ? 1 : 0,
+                ml: isMyMessage ? 0 : 1,
             }}
         >
             <Box
@@ -30,13 +32,13 @@ const MessageForm: React.FC<Props> = ({ msg }) => {
                 <Paper
                     variant="outlined"
                     sx={{
-                        p: 2,                       
-                        backgroundColor: isMyMessage ? 'lightgreen' : 'lightgray', 
+                        p: 2,
+                        backgroundColor: isMyMessage ? 'lightgreen' : 'lightgray',
                         borderRadius: isMyMessage ? '20px 20px 5px 20px' : '20px 20px 20px 5px',
                     }}
                 >
                     <Typography variant="body1" component="div">
-                        <strong>{msg.from}:</strong> 
+                        <strong>{nickname}:</strong>
                         <div>{msg.text}</div>
                     </Typography>
                     <Typography variant="overline">

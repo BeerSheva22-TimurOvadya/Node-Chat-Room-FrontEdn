@@ -11,11 +11,10 @@ import MessageInput from '../common/MessageInput';
 
 const Chat: React.FC = () => {
     const users = useSelectorUsers();
-    console.log('CHATS', users);
     const authData = useSelector((state: any) => state.authState.userData);
     const senderEmail = authData?.email;
     const messages = useSelectorMessages();
-    const [selectedUser, setSelectedUser] = useState<string | null>(null);    
+    const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
     const [unreadMessageCounts, setUnreadMessageCounts] = useState<Record<string, number>>({});
 
@@ -28,19 +27,19 @@ const Chat: React.FC = () => {
 
         if (messagesFromUser.length > 0) {
             await serverService.markAsRead(username);
-            calculateUnreadMessageCounts(messages);
+            setUnreadMessageCounts((prevCounts) => {
+                return { ...prevCounts, [username]: 0 };
+            });
         }
     };
 
     const calculateUnreadMessageCounts = (msgs: Message[]) => {
         const counts: Record<string, number> = {};
         msgs.forEach((msg) => {
-            if (!msg.read && msg.to === senderEmail) {
+            if (!msg.read && msg.to === senderEmail && msg.from !== selectedUser) {
                 counts[msg.from] = (counts[msg.from] || 0) + 1;
             }
         });
-
-        console.log('READ', counts);
         setUnreadMessageCounts(counts);
     };
 
@@ -53,7 +52,7 @@ const Chat: React.FC = () => {
                     text: text,
                     timestamp: new Date(),
                 };
-                await serverService.sendMessage(newMessage);
+                serverService.sendMessage(newMessage);
             } catch (err) {
                 console.error('Failed to send message:', err);
             }
@@ -64,7 +63,7 @@ const Chat: React.FC = () => {
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };   
+    };
 
     useEffect(() => {
         scrollToBottom();
@@ -73,10 +72,6 @@ const Chat: React.FC = () => {
     useEffect(() => {
         calculateUnreadMessageCounts(messages);
     }, [messages]);
-
-    
-
-    
 
     const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 
@@ -90,6 +85,10 @@ const Chat: React.FC = () => {
         setMenuPosition(null);
         setSelectedMessageId(null);
     };
+    const findNicknameByEmail = (email: string) => {
+        const user = users.find((u) => u.username === email);
+        return user?.nickname || email;
+    }
 
     const handleDeleteMessage = async () => {
         if (selectedMessageId) {
@@ -115,33 +114,39 @@ const Chat: React.FC = () => {
                 }}
             >
                 <List>
-                    {users.map((user: User) => (
-                        <ListItemButton
-                            key={user.username}
-                            onClick={() => handleUserSelect(user.username)}
-                        >
-                            <ListItemText
-                                primary={
-                                    <>
-                                        {user.nickname}
-                                        {unreadMessageCounts[user.username] ? (
-                                            <span style={{ marginLeft: 8, color: 'red' }}>
-                                                {unreadMessageCounts[user.username]}
-                                            </span>
-                                        ) : null}
-                                    </>
-                                }
+                    {users
+                        .filter((user) => user.username !== senderEmail) 
+                        .map((user: User) => (
+                            <ListItemButton
+                                key={user.username}
+                                onClick={() => handleUserSelect(user.username)}
                                 style={{
-                                    color:
-                                        user.status === 'BLOCKED'
-                                            ? 'red'
-                                            : user.onlineStatus === 'ONLINE'
-                                            ? 'green'
-                                            : 'black',
-                                }}
-                            />
-                        </ListItemButton>
-                    ))}
+                                    backgroundColor:
+                                        user.username === selectedUser ? '#e0e0e0' : 'transparent',
+                                }} 
+                            >
+                                <ListItemText
+                                    primary={
+                                        <>
+                                            {user.nickname}
+                                            {unreadMessageCounts[user.username] ? (
+                                                <span style={{ marginLeft: 8, color: 'red' }}>
+                                                    {unreadMessageCounts[user.username]}
+                                                </span>
+                                            ) : null}
+                                        </>
+                                    }
+                                    style={{
+                                        color:
+                                            user.status === 'BLOCKED'
+                                                ? 'red'
+                                                : user.onlineStatus === 'ONLINE'
+                                                ? 'green'
+                                                : 'black',
+                                    }}
+                                />
+                            </ListItemButton>
+                        ))}
                 </List>
             </Paper>
             <Box display="flex" flexDirection="column" flex="1" height="85vh">
@@ -152,7 +157,7 @@ const Chat: React.FC = () => {
                         marginBottom: '10px',
                         marginRight: '20px',
                         maxHeight: '800px',
-                        overflow: 'auto',                        
+                        overflow: 'auto',
                     }}
                 >
                     {messages
@@ -169,7 +174,7 @@ const Chat: React.FC = () => {
                                 key={message._id || index}
                                 onContextMenu={(e) => handleOpenContextMenu(e, message._id)}
                             >
-                                <MessageForm msg={message} />
+                                <MessageForm msg={message} findNicknameByEmail={findNicknameByEmail} />
                             </div>
                         ))}
                     <div ref={messagesEndRef}></div>

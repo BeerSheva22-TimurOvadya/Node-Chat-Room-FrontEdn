@@ -1,13 +1,13 @@
 {
     "always": [],
     "authenticated": [
-        { "to": "/users", "label": "Users", "order": 2 },
-        { "to": "/messages", "label": "Messages Table", "order": 3 },        
         { "to": "/chat", "label": "Chat", "order": 1 },
+        { "to": "/messages", "label": "Messages Table", "order": 3 },      
+        
         { "to": "/signout", "label": "Sign Out", "order": 1000 }        
     ],
     "admin": [       
-        { "to": "/generation", "label": "Generate Messages", "order": 20 }
+        { "to": "/users", "label": "Accounts", "order": 2 }
     ],
     "noadmin": [],
     "noauthenticated": [{ "to": "/signin", "label": "Sign In", "order": 2 }]

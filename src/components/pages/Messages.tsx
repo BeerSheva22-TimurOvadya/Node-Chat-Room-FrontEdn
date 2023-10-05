@@ -1,12 +1,4 @@
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Typography
-} from '@mui/material';
+import { Box, Button, ButtonGroup, Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { serverService } from '../../config/service-config';
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
@@ -15,10 +7,8 @@ import { useSelectorAuth } from '../../redux/store';
 import { Confirmation } from '../common/Confirmation';
 import { useDispatchCode, useSelectorMessages } from '../../hooks/hooks';
 
-
 const Messages: React.FC = () => {
-    const columnsCommon: GridColDef[] = [    
-        
+    const columnsCommon: GridColDef[] = [
         {
             field: 'from',
             headerName: 'From',
@@ -54,11 +44,12 @@ const Messages: React.FC = () => {
         },
         {
             field: 'read',
-            headerName: 'Status',
+            headerName: 'Read',
             flex: 0.7,
             headerClassName: 'data-grid-header',
             align: 'center',
             headerAlign: 'center',
+            renderCell: (params) => params.value ? 'YES' : 'NO',
         },
         {
             field: 'actions',
@@ -74,14 +65,14 @@ const Messages: React.FC = () => {
             },
         },
     ];
-    
+
     const dispatch = useDispatchCode();
     const userData = useSelectorAuth();
     const messages = useSelectorMessages();
     const [filteredMessages, setFilteredMessages] = useState(messages);
 
     const [openTextDialog, setOpenTextDialog] = useState(false);
-    const [selectedMessageText, setSelectedMessageText] = useState("");
+    const [selectedMessageText, setSelectedMessageText] = useState('');
 
     const showMessageText = (text: string) => {
         setSelectedMessageText(text);
@@ -108,13 +99,10 @@ const Messages: React.FC = () => {
     const messageId = useRef('');
     const confirmFn = useRef<any>(null);
 
-
-  
-
     function removeMessage(id: any) {
         title.current = 'Remove Message object?';
         const message = messages.find((mess) => mess._id === id);
-        content.current = `You are going remove message with id ${message?._id}`;
+        content.current = `Are you sure you want to delete the message from ${message?.from} to ${message?.to} sent on: ${message?.timestamp.toLocaleString()}`;
         messageId.current = id;
         confirmFn.current = actualRemove;
         setOpenConfirm(true);
@@ -133,17 +121,15 @@ const Messages: React.FC = () => {
     }
 
     const showIncomingMessages = () => {
-        if(userData){
+        if (userData) {
             setFilteredMessages(messages.filter((message) => message.to === userData.email));
         }
-        
     };
 
     const showOutgoingMessages = () => {
-        if(userData){
+        if (userData) {
             setFilteredMessages(messages.filter((message) => message.from === userData.email));
         }
-        
     };
 
     return (
@@ -154,30 +140,31 @@ const Messages: React.FC = () => {
                 alignItems: 'center',
             }}
         >
-            <ButtonGroup 
-                variant="contained" 
-                color="primary" 
+            <ButtonGroup
+                variant="contained"
+                color="primary"
                 aria-label="contained primary button group"
                 sx={{ marginBottom: 2 }}
             >
-                <Button onClick={showIncomingMessages} sx={{ marginRight: 1 }}>Incoming</Button>
-                <Button onClick={showOutgoingMessages} sx={{ marginRight: 1 }}>Outgoing</Button>
+                <Button onClick={showIncomingMessages} sx={{ marginRight: 1 }}>
+                    Incoming
+                </Button>
+                <Button onClick={showOutgoingMessages} sx={{ marginRight: 1 }}>
+                    Outgoing
+                </Button>
                 <Button onClick={showAllMessages}>All</Button> {/* Новая кнопка */}
             </ButtonGroup>
 
             <Box sx={{ height: '80vh', width: '95vw', marginTop: 2 }}>
-                <DataGrid 
-                    columns={columns} 
-                    rows={filteredMessages} 
+                <DataGrid
+                    columns={columns}
+                    rows={filteredMessages}
                     getRowId={(row) => row._id}
                     onRowClick={(params) => showMessageText(params.row.text)}
                 />
             </Box>
 
-            <Dialog
-                open={openTextDialog}
-                onClose={closeMessageText}
-            >
+            <Dialog open={openTextDialog} onClose={closeMessageText}>
                 <DialogTitle>Message Content</DialogTitle>
                 <DialogContent>
                     <Typography>{selectedMessageText}</Typography>
@@ -195,6 +182,3 @@ const Messages: React.FC = () => {
 };
 
 export default Messages;
-
-
-

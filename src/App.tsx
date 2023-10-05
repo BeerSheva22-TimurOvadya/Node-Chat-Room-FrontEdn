@@ -18,7 +18,6 @@ import { authActions } from './redux/slices/authSlice';
 import { authService } from './config/service-config';
 import { Alert, Snackbar } from '@mui/material';
 import { codeActions } from './redux/slices/codeSlice';
-import Generation from './components/pages/Generation';
 import Users from './components/pages/Users';
 import Chat from './components/pages/Chat';
 const { always, authenticated, admin, noadmin, noauthenticated } = routesConfig;
@@ -85,8 +84,7 @@ const App: React.FC = () => {
                     <Route path="users" element={<Users />} />
                     <Route path="chat" element={<Chat />} />                    
                     <Route path="signin" element={<SignIn />} />
-                    <Route path="signout" element={<SignOut />} />
-                    <Route path="generation" element={<Generation />} />
+                    <Route path="signout" element={<SignOut />} />                    
                     <Route path="/*" element={<NotFound />} />
                 </Route>
             </Routes>

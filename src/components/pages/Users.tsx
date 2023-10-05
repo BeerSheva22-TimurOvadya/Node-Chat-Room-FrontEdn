@@ -98,6 +98,10 @@ const Users: React.FC = () => {
     const userId = useRef('');
     const confirmFn = useRef<any>(null);
 
+    const filteredUsers = useMemo(() => {
+        return users.filter(user => user.username !== userData?.email);
+    }, [users, userData]);
+
     function handleStatusChange(params: any, newStatus: string) {
         if (userData && userData.role === 'admin') {
             title.current = 'Change Status?';
@@ -133,7 +137,7 @@ const Users: React.FC = () => {
     function removeUser(id: any) {
         title.current = 'Remove User object?';
         const user = users.find((mes) => mes.username === id);
-        content.current = `You are going remove user with id ${user?.username}`;
+        content.current = `You are going remove user with email: ${user?.username} and nickname: ${user?.nickname}`;
         userId.current = id;
         confirmFn.current = actualRemove;
         setOpenConfirm(true);
@@ -161,7 +165,7 @@ const Users: React.FC = () => {
             }}
         >
             <Box sx={{ height: '80vh', width: '95vw' }}>
-                <DataGrid columns={columns} rows={users} getRowId={(row) => row.username} />
+            <DataGrid columns={columns} rows={filteredUsers} getRowId={(row) => row.username} />
                 <Popover
                     open={Boolean(anchorEl)}
                     anchorEl={anchorEl}

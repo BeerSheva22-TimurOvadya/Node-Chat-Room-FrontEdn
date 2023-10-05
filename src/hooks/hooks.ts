@@ -71,7 +71,6 @@ export function useSelectorUsers() {
         });
         
         return () => subscription.unsubscribe();
-    }, []);
-    console.log("HOOK", users)
+    }, []);    
     return users;
 }

@@ -1,4 +1,3 @@
-// ServerService.ts
 import { Observable, Subscriber } from 'rxjs';
 import User from '../model/User';
 import Message from '../model/Message';
@@ -125,6 +124,8 @@ export default class ServerServiceRest implements ServerService {
     async markAsRead(sender: string): Promise<void> {
         await fetchRequest(`${this.urlMessagesService}/mark-as-read/${sender}`, { method: 'PUT' });
     }
+
+    
 
     private async fetchAllUsers(url: string): Promise<User[] | string> {
         const response = await fetchRequest(url, {});
