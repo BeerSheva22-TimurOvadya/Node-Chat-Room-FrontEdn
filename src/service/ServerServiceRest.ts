@@ -125,6 +125,12 @@ export default class ServerServiceRest implements ServerService {
         await fetchRequest(`${this.urlMessagesService}/mark-as-read/${sender}`, { method: 'PUT' });
     }
 
+    async getUserStatus(username: string): Promise<string> {
+        const response = await fetchRequest(`${this.urlUsersService}/${username}/status`, {});
+        const data = await response.json();
+        return data.status;
+    }
+
     
 
     private async fetchAllUsers(url: string): Promise<User[] | string> {

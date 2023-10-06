@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux';
 import InputResult from '../../model/InputResult';
 import { authActions } from '../../redux/slices/authSlice';
 import LoginData from '../../model/LoginData';
-import { authService } from '../../config/service-config';
+import { authService, serverService } from '../../config/service-config';
 import UserData from '../../model/UserData';
 import SignInForm from '../forms/SignInForm';
 
@@ -16,11 +16,26 @@ const SignIn: React.FC = () => {
         };
         try {
             const res: UserData = await authService.login(loginData);
-            res && dispatch(authActions.set(res));
-            inputResult = {
-                status: res ? 'success' : 'error',
-                message: res ? '' : 'Incorrect Credentials',
-            };
+            if (res) {
+                const status = await serverService.getUserStatus(res.email);
+                console.log('status', status);
+                if (status === 'BLOCKED') {
+                    return {
+                        status: 'error',
+                        message: 'Your account has been blocked.',
+                    };
+                }
+                dispatch(authActions.set(res));
+                inputResult = {
+                    status: 'success',
+                    message: '',
+                };
+            } else {
+                inputResult = {
+                    status: 'error',
+                    message: 'Incorrect Credentials',
+                };
+            }
         } catch (error: any) {
             inputResult = { status: 'error', message: error.message };
         }
@@ -45,12 +60,7 @@ const SignIn: React.FC = () => {
         return inputResult;
     }
 
-    return (
-        <SignInForm
-            submitFn={submitFn}
-            registerFn={registerFn}           
-        />
-    );
+    return <SignInForm submitFn={submitFn} registerFn={registerFn} />;
 };
 
 export default SignIn;

@@ -6,6 +6,7 @@ export default interface ServerService {
     getAllAccounts(): Observable<User[] | string> ;
     deleteUser(username: string): Promise<string>;
     updateUserStatus(username: string, newStatus: string): Promise<string>;
+    getUserStatus(username: string): Promise<string>
     
     getMessages(): Observable<Message[] | string>  
     deleteMessage(id: any): Promise<void>;
