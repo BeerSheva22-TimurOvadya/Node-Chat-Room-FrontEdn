@@ -29,7 +29,10 @@ const MessageInput: React.FC<Props> = ({ onSendMessage }) => {
             <Button
                 variant="contained"
                 color="primary"
-                onClick={() => onSendMessage(messageText)}
+                onClick={() => {
+                    onSendMessage(messageText);
+                    setMessageText('');
+                }}
                 style={{ marginLeft: '10px' }}
             >
                 Send

@@ -84,8 +84,7 @@ const Users: React.FC = () => {
     ];
     const dispatch = useDispatchCode();
     const userData = useSelectorAuth();
-    const users = useSelectorUsers();
-    console.log('USERS', users);
+    const users = useSelectorUsers();    
     const columns = useMemo(() => getColumns(), [userData, users]);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

@@ -1,4 +1,5 @@
 import { Box, Paper, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 type Props = {
     msg: any;
@@ -6,11 +7,18 @@ type Props = {
 };
 
 const AUTH_ITEM = 'auth-item';
-const currentUser = JSON.parse(localStorage.getItem(AUTH_ITEM) || '{}');
+
 
 const MessageForm: React.FC<Props> = ({ msg, findNicknameByEmail }) => {
+    const [currentUser, setCurrentUser] = useState<any>({});
+    
+useEffect(() => {    
+    setCurrentUser(JSON.parse(localStorage.getItem(AUTH_ITEM) || '{}'));
+}, []);
+
     const isMyMessage: Boolean = msg.from === currentUser.email;
     const nickname = findNicknameByEmail(msg.from);
+    
 
     return (
         <Box

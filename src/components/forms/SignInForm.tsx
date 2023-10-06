@@ -83,7 +83,7 @@ const SignInForm: React.FC<Props> = ({ submitFn, registerFn }) => {
    
 
     function validateNickname(nickname: string): boolean {
-        return nickname.length >= 3 && nickname.length <= 8;
+        return nickname.length >= 3 && nickname.length <= 15;
     }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
