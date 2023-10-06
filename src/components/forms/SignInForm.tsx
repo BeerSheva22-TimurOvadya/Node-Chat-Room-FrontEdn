@@ -1,8 +1,22 @@
 import * as React from 'react';
 import {
-    Avatar, Button, CssBaseline, TextField, Link, Grid, Box, Typography,
-    Container, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogTitle,
-    createTheme, ThemeProvider
+    Avatar,
+    Button,
+    CssBaseline,
+    TextField,
+    Link,
+    Grid,
+    Box,
+    Typography,
+    Container,
+    Alert,
+    Snackbar,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    createTheme,
+    ThemeProvider,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
@@ -34,9 +48,8 @@ function Copyright(props: any) {
 
 const validate = {
     email: (email: string): boolean => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(email),
-    password: (password: string): boolean => password.length >= 8    
-}
-
+    password: (password: string): boolean => password.length >= 8,
+};
 
 const SignInForm: React.FC<Props> = ({ submitFn, registerFn }) => {
     const message = React.useRef<string>('');
@@ -59,9 +72,9 @@ const SignInForm: React.FC<Props> = ({ submitFn, registerFn }) => {
             setOpen(true);
             return false;
         }
-        
+
         return true;
-    }
+    };
 
     const handleSignIn = async (email: string, password: string) => {
         const result = await submitFn({ email, password });
@@ -80,7 +93,6 @@ const SignInForm: React.FC<Props> = ({ submitFn, registerFn }) => {
         severity.current = result.status;
         message.current && setOpen(true);
     };
-   
 
     function validateNickname(nickname: string): boolean {
         return nickname.length >= 3 && nickname.length <= 15;

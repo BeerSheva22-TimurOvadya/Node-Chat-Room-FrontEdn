@@ -6,7 +6,6 @@ import { authService } from '../../config/service-config';
 import UserData from '../../model/UserData';
 import SignInForm from '../forms/SignInForm';
 
-
 const SignIn: React.FC = () => {
     const dispatch = useDispatch();
 

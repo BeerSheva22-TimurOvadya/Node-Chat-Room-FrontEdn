@@ -179,7 +179,7 @@ const Chat: React.FC = () => {
                         ))}
                     <div ref={messagesEndRef}></div>
                 </Paper>
-                <MessageInput onSendMessage={handleSendMessage} />
+                <MessageInput onSendMessage={handleSendMessage} selectedUser={selectedUser} />
                 <Menu
                     open={Boolean(menuPosition)}
                     onClose={handleCloseContextMenu}

@@ -4,5 +4,5 @@ type User = {
     status: string,
     onlineStatus: string,
     nickname: string
-}
+} 
 export default User;
