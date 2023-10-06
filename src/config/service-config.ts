@@ -6,6 +6,6 @@ import ServerServiceRest from '../service/ServerServiceRest';
 
 
 
-export const authService: AuthService = new AuthServiceJwt('localhost:8080/users');
+export const authService: AuthService = new AuthServiceJwt('http://localhost:8080/users');
 
 export const serverService: ServerService = new ServerServiceRest('localhost:8080')

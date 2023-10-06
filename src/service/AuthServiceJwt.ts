@@ -6,6 +6,9 @@ import { fetchRequest } from './httpService';
 export const AUTH_DATA_JWT = 'auth-data-jwt';
 
 function extractJwtPayload(jwt: string) {
+    if (!jwt) {
+        throw new Error('JWT token is missing or undefined.');
+    }
     const jwtPayloadJSON = atob(jwt.split('.')[1]);
     return JSON.parse(jwtPayloadJSON);
 }
@@ -21,7 +24,7 @@ export default class AuthServiceJwt implements AuthService {
     private urlService: string;
 
     constructor(private baseUrl: string) {
-        this.urlService = `http://${baseUrl}`;
+        this.urlService = baseUrl;
     }
 
     async login(loginData: LoginData): Promise<UserData> {
@@ -40,12 +43,12 @@ export default class AuthServiceJwt implements AuthService {
     }
 
     async register(loginData: LoginData): Promise<UserData> {
-        const urlRegisterService = `http://${this.baseUrl}`;
+        const urlRegisterService = this.urlService;
         const serverRegisterData = {
             username: loginData.email,
             password: loginData.password,
+            nickname: loginData.nickname,
         };
-
         try {
             const response = await fetchRequest(
                 urlRegisterService,
@@ -56,7 +59,7 @@ export default class AuthServiceJwt implements AuthService {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Error during registration');
             }
-            return getUserData(await response.json());
+            return this.login(loginData);
         } catch (error: any) {
             throw new Error(error.message || 'Unknown error during registration');
         }
@@ -65,8 +68,8 @@ export default class AuthServiceJwt implements AuthService {
     async logout(): Promise<void> {
         const currentUserJWT = localStorage.getItem(AUTH_DATA_JWT);
         if (currentUserJWT) {
-            const jwtPayloadObj = extractJwtPayload(currentUserJWT);            
-            const username = jwtPayloadObj.sub;        
+            const jwtPayloadObj = extractJwtPayload(currentUserJWT);
+            const username = jwtPayloadObj.sub;
 
             try {
                 const response = await fetch(this.urlService + '/logout', {
@@ -78,7 +81,6 @@ export default class AuthServiceJwt implements AuthService {
                 });
 
                 if (response.ok) {
-                    
                 }
             } catch (error) {
                 console.error('Error during logout:', error);
@@ -86,5 +88,17 @@ export default class AuthServiceJwt implements AuthService {
         } else {
             console.warn('No JWT found in local storage');
         }
+    }
+
+    async checkEmailExists(email: string): Promise<boolean> {
+        const response = await fetch(this.urlService + "/check-email", {
+            method: "POST",
+            body: JSON.stringify({ email }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });        
+        const data = await response.json();
+        return data.exists; 
     }
 }

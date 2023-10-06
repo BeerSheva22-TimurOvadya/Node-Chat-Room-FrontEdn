@@ -1,21 +1,24 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
+import {
+    Avatar, Button, CssBaseline, TextField, Link, Grid, Box, Typography,
+    Container, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogTitle,
+    createTheme, ThemeProvider
+} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+
 import LoginData from '../../model/LoginData';
 import InputResult from '../../model/InputResult';
-import { Alert,  Snackbar } from '@mui/material';
 import { StatusType } from '../../model/StatusType';
+import { authService } from '../../config/service-config';
 
+const EMAIL_ERROR = 'Please enter a valid email.';
+const PASSWORD_ERROR = 'Password should be at least 8 characters long.';
+const defaultTheme = createTheme();
 
+type Props = {
+    submitFn: (loginData: LoginData) => Promise<InputResult>;
+    registerFn: (loginData: LoginData) => Promise<InputResult>;
+};
 function Copyright(props: any) {
     return (
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -28,18 +31,37 @@ function Copyright(props: any) {
         </Typography>
     );
 }
-const defaultTheme = createTheme();
 
-type Props = {
-    submitFn: (loginData: LoginData) => Promise<InputResult>;
-    registerFn: (loginData: LoginData) => Promise<InputResult>;
-    
-};
+const validate = {
+    email: (email: string): boolean => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(email),
+    password: (password: string): boolean => password.length >= 8    
+}
 
-const SignInForm: React.FC<Props> = ({ submitFn, registerFn}) => {
+
+const SignInForm: React.FC<Props> = ({ submitFn, registerFn }) => {
     const message = React.useRef<string>('');
     const [open, setOpen] = React.useState(false);
     const severity = React.useRef<StatusType>('success');
+    const [isDialogOpen, setDialogOpen] = React.useState(false);
+    const [nickname, setNickname] = React.useState('');
+
+    const validateForm = (email: string, password: string): boolean => {
+        if (!validate.email(email)) {
+            message.current = EMAIL_ERROR;
+            severity.current = 'error';
+            setOpen(true);
+            return false;
+        }
+
+        if (!validate.password(password)) {
+            message.current = PASSWORD_ERROR;
+            severity.current = 'error';
+            setOpen(true);
+            return false;
+        }
+        
+        return true;
+    }
 
     const handleSignIn = async (email: string, password: string) => {
         const result = await submitFn({ email, password });
@@ -47,31 +69,51 @@ const SignInForm: React.FC<Props> = ({ submitFn, registerFn}) => {
         severity.current = result.status;
         message.current && setOpen(true);
     };
+    const openDialog = () => {
+        setDialogOpen(true);
+    };
 
-    const handleSignUp = async (email: string, password: string) => {
-        const result = await registerFn({ email, password });
+    const handleSignUp = async (email: string, password: string, nickname: string) => {
+        const result = await registerFn({ email, password, nickname });
+
         message.current = result.message!;
         severity.current = result.status;
         message.current && setOpen(true);
     };
+   
+
+    function validateNickname(nickname: string): boolean {
+        return nickname.length >= 3 && nickname.length <= 8;
+    }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const email: string = data.get('email')! as string;
         const password: string = data.get('password')! as string;
-
+        if (!validateForm(email, password)) return;
         handleSignIn(email, password);
     };
 
-    const handleRegistration = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleRegistration = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         const form = document.forms[0];
         const data = new FormData(form);
         const email: string = data.get('email')! as string;
         const password: string = data.get('password')! as string;
+        if (!validateForm(email, password)) return;
+        handleCheckEmailAndOpenDialog(email);
+    };
 
-        handleSignUp(email, password);
+    const handleCheckEmailAndOpenDialog = async (email: string) => {
+        const emailExists = await authService.checkEmailExists(email);
+        if (emailExists) {
+            message.current = 'User with this email already exists.';
+            severity.current = 'error';
+            setOpen(true);
+        } else {
+            openDialog();
+        }
     };
 
     return (
@@ -135,7 +177,7 @@ const SignInForm: React.FC<Props> = ({ submitFn, registerFn}) => {
                                 >
                                     Sign up
                                 </Button>
-                            </Grid>                           
+                            </Grid>
                         </Grid>
                     </Box>
                     <Snackbar open={open} autoHideDuration={10000} onClose={() => setOpen(false)}>
@@ -149,6 +191,52 @@ const SignInForm: React.FC<Props> = ({ submitFn, registerFn}) => {
                     </Snackbar>
                 </Box>
                 <Copyright sx={{ mt: 4, mb: 4 }} />
+                <Dialog
+                    open={isDialogOpen}
+                    onClose={() => setDialogOpen(false)}
+                    aria-labelledby="form-dialog-title"
+                >
+                    <DialogTitle id="form-dialog-title">Sign Up</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="nickname"
+                            label="Nickname"
+                            type="text"
+                            fullWidth
+                            value={nickname}
+                            onChange={(e) => setNickname(e.target.value)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setDialogOpen(false)} color="primary">
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={async () => {
+                                const form = document.forms[0];
+                                const data = new FormData(form);
+                                const email: string = data.get('email')! as string;
+                                const password: string = data.get('password')! as string;
+
+                                if (!validateNickname(nickname)) {
+                                    message.current =
+                                        'Nickname should be between 3 to 8 characters long.';
+                                    severity.current = 'error';
+                                    setOpen(true);
+                                    return;
+                                }
+
+                                await handleSignUp(email, password, nickname);
+                                setDialogOpen(false);
+                            }}
+                            color="primary"
+                        >
+                            Register
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Container>
         </ThemeProvider>
     );
