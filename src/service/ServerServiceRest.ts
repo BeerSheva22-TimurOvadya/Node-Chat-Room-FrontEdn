@@ -58,7 +58,7 @@ export default class ServerServiceRest implements ServerService {
                 reject(error);
             };
             sharedWebSocket.onmessage = (message) => {
-                console.log('Hello. you have a new message', message.data);
+                console.log(message.data);
                 this.subscriberNextUsers();
                 this.subscriberNextMessages();
             };

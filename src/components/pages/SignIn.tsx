@@ -17,8 +17,7 @@ const SignIn: React.FC = () => {
         try {
             const res: UserData = await authService.login(loginData);
             if (res) {
-                const status = await serverService.getUserStatus(res.email);
-                console.log('status', status);
+                const status = await serverService.getUserStatus(res.email);               
                 if (status === 'BLOCKED') {
                     return {
                         status: 'error',
