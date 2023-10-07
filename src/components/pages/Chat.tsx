@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelectorMessages, useSelectorUsers } from '../../hooks/hooks';
 import { serverService } from '../../config/service-config';
-import { Box, List, ListItemButton, ListItemText, TextField, Button, Paper } from '@mui/material';
+import { Box, List, ListItemButton, ListItemText,  Paper } from '@mui/material';
 import Message from '../../model/Message';
 import MessageForm from '../common/Message';
 import User from '../../model/User';

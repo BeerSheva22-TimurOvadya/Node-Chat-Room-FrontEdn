@@ -13,16 +13,16 @@ export default class ServerServiceRest implements ServerService {
     private observableMessages: Observable<Message[] | string> | null = null;
     private subscriberUsers: Subscriber<string | User[]> | undefined;
     private subscriberMessages: Subscriber<string | Message[]> | undefined;
-    private baseUrl: string;
+    
     private urlUsersService: string;
     private urlMessagesService: string;
     private urlWebsocket: string;
 
     constructor(baseUrl: string) {
-        this.baseUrl = baseUrl;
-        this.urlUsersService = `http://localhost:8080/users`;
-        this.urlMessagesService = `http://localhost:8080/messages`;
-        this.urlWebsocket = `ws://localhost:8080/users/websocket/`;
+       
+        this.urlUsersService = `http://${baseUrl}/users`;
+        this.urlMessagesService = `http://${baseUrl}/messages`;
+        this.urlWebsocket = `ws://${baseUrl}/users/websocket/`;
     }
 
     private subscriberNextUsers(): void {

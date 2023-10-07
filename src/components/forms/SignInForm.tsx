@@ -24,6 +24,7 @@ import LoginData from '../../model/LoginData';
 import InputResult from '../../model/InputResult';
 import { StatusType } from '../../model/StatusType';
 import { authService } from '../../config/service-config';
+import { useRef, useState } from 'react';
 
 const EMAIL_ERROR = 'Please enter a valid email.';
 const PASSWORD_ERROR = 'Password should be at least 8 characters long.';
@@ -52,11 +53,11 @@ const validate = {
 };
 
 const SignInForm: React.FC<Props> = ({ submitFn, registerFn }) => {
-    const message = React.useRef<string>('');
-    const [open, setOpen] = React.useState(false);
-    const severity = React.useRef<StatusType>('success');
-    const [isDialogOpen, setDialogOpen] = React.useState(false);
-    const [nickname, setNickname] = React.useState('');
+    const message = useRef<string>('');
+    const [open, setOpen] = useState(false);
+    const severity = useRef<StatusType>('success');
+    const [isDialogOpen, setDialogOpen] = useState(false);
+    const [nickname, setNickname] = useState('');
 
     const validateForm = (email: string, password: string): boolean => {
         if (!validate.email(email)) {
@@ -88,7 +89,6 @@ const SignInForm: React.FC<Props> = ({ submitFn, registerFn }) => {
 
     const handleSignUp = async (email: string, password: string, nickname: string) => {
         const result = await registerFn({ email, password, nickname });
-
         message.current = result.message!;
         severity.current = result.status;
         message.current && setOpen(true);

@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
-import {
-    
-    Box,
-    
-    Button,
-    
-} from '@mui/material';
+import { Box, Button } from '@mui/material';
 import Message from '../../model/Message';
-
 
 import InputResult from '../../model/InputResult';
 
@@ -21,22 +14,15 @@ const initialMessage: Message = {
     from: '',
     to: '',
     text: '',
-    timestamp: initialDate    
+    timestamp: initialDate,
 };
 export const MessageForm: React.FC<Props> = ({ submitFn, messageUpdated }) => {
-    
-    const [message, setMessage] = useState<Message>(messageUpdated || initialMessage);
-    const [errorMessage, setErrorMessage] = useState('');
-    
+    const [message, setMessage] = useState<Message>(messageUpdated || initialMessage);    
+
     async function onSubmitFn(event: any) {
         event.preventDefault();
-        if (!message.read) {
-            setErrorMessage('Please select gender');
-        } else {
-            const res = await submitFn(message);
-
-            res.status === 'success' && event.target.reset();
-        }
+        const res = await submitFn(message);
+        res.status === 'success' && event.target.reset();
     }
     function onResetFn(event: any) {
         setMessage(messageUpdated || initialMessage);
@@ -44,8 +30,7 @@ export const MessageForm: React.FC<Props> = ({ submitFn, messageUpdated }) => {
 
     return (
         <Box sx={{ marginTop: { sm: '25vh' } }}>
-            <form onSubmit={onSubmitFn} onReset={onResetFn}>            
-
+            <form onSubmit={onSubmitFn} onReset={onResetFn}>
                 <Box sx={{ marginTop: { xs: '10vh', sm: '5vh' }, textAlign: 'center' }}>
                     <Button type="submit">Submit</Button>
                     <Button type="reset">Reset</Button>
